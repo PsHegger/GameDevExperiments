@@ -1,0 +1,23 @@
+package io.github.pshegger.gamedevexperiments.scenes.menu
+
+import io.github.pshegger.gamedevexperiments.GameSurfaceView
+import io.github.pshegger.gamedevexperiments.scenes.PoissonBestCandidateScene
+import io.github.pshegger.gamedevexperiments.scenes.PoissonBridsonScene
+
+/**
+ * @author gergely.hegedus@tappointment.com
+ */
+class PoissonMenuScene(gameSurfaceView: GameSurfaceView) : BaseMenuScene(gameSurfaceView) {
+    override val title: String
+        get() = "Poisson"
+
+    override fun onBackPressed() {
+        gameSurfaceView.scene = MainMenuScene(gameSurfaceView)
+    }
+
+    override val scenes: List<MenuItem>
+        get() = listOf(
+                MenuItem("Best-Candidate", PoissonBestCandidateScene(gameSurfaceView)),
+                MenuItem("Bridson", PoissonBridsonScene(gameSurfaceView))
+        )
+}
