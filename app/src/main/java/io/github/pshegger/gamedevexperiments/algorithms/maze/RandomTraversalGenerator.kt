@@ -24,18 +24,13 @@ class RandomTraversalGenerator : BaseMazeGenerator() {
 
         var foundAWay = false
 
-        while (!foundAWay) {
-            if (possibleWays.isEmpty()) {
-                foundAWay = true
-                continue
-            }
-
+        while (!foundAWay && !possibleWays.isEmpty()) {
             val c = possibleWays.random()
 
-            val dests = c.possibleDestinations
+            val destinations = c.possibleDestinations
 
-            if (dests.isNotEmpty()) {
-                val dst = dests.random()
+            if (destinations.isNotEmpty()) {
+                val dst = destinations.random()
                 buildTunnel(c, dst)
 
                 possibleWays.add(dst)
@@ -65,14 +60,4 @@ class RandomTraversalGenerator : BaseMazeGenerator() {
         started = false
         possibleWays.clear()
     }
-
-    private val Coordinate.possibleDestinations: List<Coordinate>
-        get() = listOf(
-                Coordinate(x - 2, y),
-                Coordinate(x + 2, y),
-                Coordinate(x, y - 2),
-                Coordinate(x, y + 2)
-        ).filter {
-            it.valid(width, height) && getField(it) == FieldValue.NotProcessed
-        }
 }

@@ -1,10 +1,8 @@
 package io.github.pshegger.gamedevexperiments.scenes.menu
 
 import io.github.pshegger.gamedevexperiments.GameSurfaceView
-import io.github.pshegger.gamedevexperiments.algorithms.maze.PrimsGenerator
 import io.github.pshegger.gamedevexperiments.algorithms.maze.RandomDepthFirstGenerator
 import io.github.pshegger.gamedevexperiments.algorithms.maze.RandomTraversalGenerator
-import io.github.pshegger.gamedevexperiments.algorithms.maze.WilsonsGenerator
 import io.github.pshegger.gamedevexperiments.scenes.MazeScene
 
 /**
@@ -18,9 +16,7 @@ class MazeMenuScene(gameSurfaceView: GameSurfaceView) : BaseMenuScene(gameSurfac
     override val scenes: List<MenuItem>
         get() = listOf(
                 MenuItem("Random Traversal", MazeScene(gameSurfaceView, RandomTraversalGenerator())),
-                MenuItem("Random Depth-First", MazeScene(gameSurfaceView, RandomDepthFirstGenerator())),
-                MenuItem("Prim's", MazeScene(gameSurfaceView, PrimsGenerator())),
-                MenuItem("Wilson's", MazeScene(gameSurfaceView, WilsonsGenerator()))
+                MenuItem("Random Depth-First", MazeScene(gameSurfaceView, RandomDepthFirstGenerator()))
         )
     override val title: String
         get() = "Maze"

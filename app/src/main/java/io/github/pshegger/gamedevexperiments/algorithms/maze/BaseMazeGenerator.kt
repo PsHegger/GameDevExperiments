@@ -70,13 +70,24 @@ abstract class BaseMazeGenerator {
         }
     }
 
-    protected data class Coordinate(val x: Int, val y: Int) {
+    protected inner class Coordinate(val x: Int, val y: Int) {
         val neighbors: List<Coordinate>
             get() = let { listOf(-1, 0, 1) }
                     .let { it * it }
                     .filter { Math.abs(it[0]) != Math.abs(it[1]) }
                     .map { Coordinate(x + it[0], y + it[1]) }
 
-        fun valid(w: Int, h: Int) = x >= 0 && y >= 0 && x < w && y < h
+        val valid: Boolean
+            get() = x >= 0 && y >= 0 && x < width && y < height
+
+        val possibleDestinations: List<Coordinate>
+            get() = listOf(
+                    Coordinate(x - 2, y),
+                    Coordinate(x + 2, y),
+                    Coordinate(x, y - 2),
+                    Coordinate(x, y + 2)
+            ).filter {
+                it.valid && getField(it) == FieldValue.NotProcessed
+            }
     }
 }
