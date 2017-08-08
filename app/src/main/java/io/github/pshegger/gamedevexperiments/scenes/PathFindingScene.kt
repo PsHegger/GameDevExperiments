@@ -10,7 +10,6 @@ import io.github.pshegger.gamedevexperiments.algorithms.maze.RandomDepthFirstGen
 import io.github.pshegger.gamedevexperiments.algorithms.pathfinding.AStar
 import io.github.pshegger.gamedevexperiments.algorithms.pathfinding.BasePathFinder
 import io.github.pshegger.gamedevexperiments.algorithms.pathfinding.BreadthFirstSearch
-import io.github.pshegger.gamedevexperiments.algorithms.pathfinding.Dijkstra
 import io.github.pshegger.gamedevexperiments.hud.Button
 import io.github.pshegger.gamedevexperiments.scenes.menu.MazeMenuScene
 
@@ -21,6 +20,11 @@ class PathFindingScene(val gameSurfaceView: GameSurfaceView) : Scene {
     private val btnBgColor = Color.argb(150, 0, 0, 0)
     private val btnBorderColor = Color.LTGRAY
     private val btnTextColor = Color.MAGENTA
+
+    private val manhattanHeuristic: (BasePathFinder.Coordinate, BasePathFinder.Coordinate) -> Float = { c, stop ->
+        (Math.abs(stop.x - c.x) + Math.abs(stop.y - c.y)).toFloat()
+    }
+    private val constantHeuristic: (BasePathFinder.Coordinate, BasePathFinder.Coordinate) -> Float = { _, _ -> 0F }
 
     private val mazeGenerator: BaseMazeGenerator = RandomDepthFirstGenerator()
 
@@ -49,11 +53,11 @@ class PathFindingScene(val gameSurfaceView: GameSurfaceView) : Scene {
         })
 
         btns.add(Button("A*", width - 400f, height - 120f, width - 240f, height - 40f, btnBgColor, btnBorderColor, btnTextColor, 50f).apply {
-            onClick = { pathFinder = AStar(mazeGenerator.fields) }
+            onClick = { pathFinder = AStar(mazeGenerator.fields, manhattanHeuristic) }
         })
 
         btns.add(Button("DIJ", width - 600f, height - 120f, width - 440f, height - 40f, btnBgColor, btnBorderColor, btnTextColor, 50f).apply {
-            onClick = { pathFinder = Dijkstra(mazeGenerator.fields) }
+            onClick = { pathFinder = AStar(mazeGenerator.fields, constantHeuristic) }
         })
 
         btns.add(Button("NEW", width - 200f, 40f, width - 40f, 120f, btnBgColor, btnBorderColor, btnTextColor, 50f).apply {
@@ -100,7 +104,7 @@ class PathFindingScene(val gameSurfaceView: GameSurfaceView) : Scene {
 
         pathFinder?.let { pathFinder ->
             pathFinder.states.forEach { state ->
-                cellPaint.color = when(state.state) {
+                cellPaint.color = when (state.state) {
                     BasePathFinder.FieldState.FieldValue.StartStop -> Color.GREEN
                     BasePathFinder.FieldState.FieldValue.Active -> Color.RED
                     BasePathFinder.FieldState.FieldValue.Path -> Color.BLUE

@@ -6,7 +6,7 @@ import java.util.*
 /**
  * @author gergely.hegedus@tappointment.com
  */
-class AStar(maze: List<List<BaseMazeGenerator.FieldValue>>) : BasePathFinder(maze) {
+class AStar(maze: List<List<BaseMazeGenerator.FieldValue>>, val heuristic: (Coordinate, Coordinate) -> Float) : BasePathFinder(maze) {
     private var pathFound = false
     private var unvisitedNodes = arrayListOf<NodeData>()
     private var visitedNodes = arrayListOf<NodeData>()
@@ -48,7 +48,7 @@ class AStar(maze: List<List<BaseMazeGenerator.FieldValue>>) : BasePathFinder(maz
                     changeState(currentNode.c, FieldState.FieldValue.Active)
                 }
 
-                currentNode = unvisitedNodes.filter { it.distance != Int.MAX_VALUE }.minBy { it.distance + distanceToStop(it.c) }!!
+                currentNode = unvisitedNodes.filter { it.distance != Int.MAX_VALUE }.minBy { it.distance + heuristic(it.c, stop) }!!
             }
         } else {
             pathBackTrack?.let { c ->
@@ -76,8 +76,6 @@ class AStar(maze: List<List<BaseMazeGenerator.FieldValue>>) : BasePathFinder(maz
     }
 
     private fun Coordinate.unvisitedNeighborNodes() = unvisitedNodes.filter { (c) -> possibleDestinations.any { dst -> dst == c } }
-
-    private fun distanceToStop(c: Coordinate) = Math.abs(stop.x - c.x) + Math.abs(stop.y - c.y)
 
     private data class NodeData(val c: Coordinate, var prev: Coordinate?, var distance: Int = Int.MAX_VALUE)
 }

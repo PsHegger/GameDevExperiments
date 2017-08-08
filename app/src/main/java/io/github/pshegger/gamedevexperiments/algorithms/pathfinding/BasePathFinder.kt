@@ -68,7 +68,7 @@ abstract class BasePathFinder(val maze: List<List<BaseMazeGenerator.FieldValue>>
         }
     }
 
-    protected inner class Coordinate(val x: Int, val y: Int) {
+    inner class Coordinate(val x: Int, val y: Int) {
         val valid: Boolean
             get() = x >= 0 && y >= 0 && y < maze.size && x < maze[y].size
 
