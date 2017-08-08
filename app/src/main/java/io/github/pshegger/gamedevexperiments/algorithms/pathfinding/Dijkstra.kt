@@ -51,19 +51,19 @@ class Dijkstra(maze: List<List<BaseMazeGenerator.FieldValue>>) : BasePathFinder(
                 currentNode = unvisitedNodes.sortedBy { it.distance }.first()
             }
         } else {
-            if (emptyBackTrack.empty()) {
-                pathBackTrack?.let { c ->
-                    if (c != stop && c != start) {
-                        changeState(c, FieldState.FieldValue.Path)
-                    }
-
-                    pathBackTrack = visitedNodes.first { it.c == c }.prev
-
-                    visitedNodes.filter { it.prev == pathBackTrack && getState(it.c) == FieldState.FieldValue.Active }
-                            .forEach { buildEmptyStack(it) }
+            pathBackTrack?.let { c ->
+                if (c != stop && c != start) {
+                    changeState(c, FieldState.FieldValue.Path)
                 }
-            } else {
-                removeState(emptyBackTrack.pop().c)
+
+                pathBackTrack = visitedNodes.first { it.c == c }.prev
+
+                visitedNodes.filter { it.prev == pathBackTrack && getState(it.c) == FieldState.FieldValue.Active }
+                        .forEach { buildEmptyStack(it) }
+            } ?: let {
+                if (!emptyBackTrack.empty()) {
+                    removeState(emptyBackTrack.pop().c)
+                }
             }
         }
     }
