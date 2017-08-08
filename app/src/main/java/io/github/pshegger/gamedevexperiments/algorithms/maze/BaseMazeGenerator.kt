@@ -13,9 +13,12 @@ abstract class BaseMazeGenerator {
     protected var width: Int = 0
     protected var height: Int = 0
 
-    val fields: ArrayList<ArrayList<FieldValue>> = arrayListOf()
+    protected val _fields: ArrayList<ArrayList<FieldValue>> = arrayListOf()
+    val fields: List<List<FieldValue>>
+        get() = _fields
+
     val finished: Boolean
-        get() = fields.all { row -> row.all { it != FieldValue.NotProcessed } }
+        get() = _fields.all { row -> row.all { it != FieldValue.NotProcessed } }
 
     abstract fun nextStep()
 
@@ -33,19 +36,19 @@ abstract class BaseMazeGenerator {
     }
 
     protected fun clearFields() {
-        fields.clear()
+        _fields.clear()
         (1..height).forEach {
             val row = arrayListOf<FieldValue>()
             (1..width).forEach {
                 row.add(FieldValue.NotProcessed)
             }
-            fields.add(row)
+            _fields.add(row)
         }
     }
 
-    protected fun getField(c: Coordinate) = fields[c.y][c.x]
+    protected fun getField(c: Coordinate) = _fields[c.y][c.x]
     protected fun setField(c: Coordinate, value: FieldValue) {
-        fields[c.y][c.x] = value
+        _fields[c.y][c.x] = value
     }
 
     protected fun buildTunnel(start: Coordinate, end: Coordinate) {
@@ -64,7 +67,7 @@ abstract class BaseMazeGenerator {
         var x = start.x
         var y = start.y
         while (getField(end) == FieldValue.NotProcessed) {
-            fields[y][x] = FieldValue.Empty
+            _fields[y][x] = FieldValue.Empty
             x += dirX
             y += dirY
         }

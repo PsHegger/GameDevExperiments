@@ -44,11 +44,11 @@ class RandomTraversalGenerator : BaseMazeGenerator() {
         }
 
         if (possibleWays.isEmpty()) {
-            fields.indices.firstOrNull { y -> fields[y].any { it == FieldValue.NotProcessed } }
+            _fields.indices.firstOrNull { y -> _fields[y].any { it == FieldValue.NotProcessed } }
                     ?.let { y ->
-                        fields[y].indices.filter { fields[y][it] == FieldValue.NotProcessed }
+                        _fields[y].indices.filter { _fields[y][it] == FieldValue.NotProcessed }
                                 .forEach { x ->
-                                    fields[y][x] = FieldValue.Wall
+                                    _fields[y][x] = FieldValue.Wall
                                 }
                     }
         }

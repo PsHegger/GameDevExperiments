@@ -19,9 +19,6 @@ class MazeScene(val gameSurfaceView: GameSurfaceView, val generator: BaseMazeGen
     private var width = 0
     private var height = 0
 
-    private var cellCountX = 0
-    private var cellCountY = 0
-
     val cellPaint = Paint()
 
     var btnRestart: Button? = null
@@ -31,14 +28,14 @@ class MazeScene(val gameSurfaceView: GameSurfaceView, val generator: BaseMazeGen
         this.width = width
         this.height = height
 
-        cellCountX = (width - 2 * margin) / cellSize
-        cellCountY = (height - 2 * margin) / cellSize
+        val cellCountX = (width - 2 * margin) / cellSize
+        val cellCountY = (height - 2 * margin) / cellSize
 
-        btnRestart = Button("RES", width - 200f, height - 120f, width - 40f, height - 40f, Color.TRANSPARENT, Color.LTGRAY, Color.MAGENTA, 50f).apply {
+        btnRestart = Button("RES", width - 200f, height - 120f, width - 40f, height - 40f, Color.argb(150, 0, 0, 0), Color.LTGRAY, Color.MAGENTA, 50f).apply {
             onClick = { generator.reset(cellCountX, cellCountY) }
         }
 
-        btnInstant = Button("INS", width - 400f, height - 120f, width - 240f, height - 40f, Color.TRANSPARENT, Color.LTGRAY, Color.MAGENTA, 50f).apply {
+        btnInstant = Button("INS", width - 400f, height - 120f, width - 240f, height - 40f, Color.argb(150, 0, 0, 0), Color.LTGRAY, Color.MAGENTA, 50f).apply {
             onClick = {
                 generator.reset(cellCountX, cellCountY)
                 generator.generateAll()
