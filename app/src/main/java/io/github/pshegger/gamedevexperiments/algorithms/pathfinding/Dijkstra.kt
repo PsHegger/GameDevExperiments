@@ -48,7 +48,7 @@ class Dijkstra(maze: List<List<BaseMazeGenerator.FieldValue>>) : BasePathFinder(
                     changeState(currentNode.c, FieldState.FieldValue.Active)
                 }
 
-                currentNode = unvisitedNodes.sortedBy { it.distance }.first()
+                currentNode = unvisitedNodes.filter { it.distance != Int.MAX_VALUE }.minBy { it.distance }!!
             }
         } else {
             pathBackTrack?.let { c ->
