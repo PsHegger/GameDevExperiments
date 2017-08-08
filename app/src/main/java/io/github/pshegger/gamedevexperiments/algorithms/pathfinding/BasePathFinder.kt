@@ -22,18 +22,15 @@ abstract class BasePathFinder(val maze: List<List<BaseMazeGenerator.FieldValue>>
         val emptyCells = maze.mapIndexed { y, row ->
             row.mapIndexed { x, fieldValue ->
                 if (fieldValue == BaseMazeGenerator.FieldValue.Empty) {
-                    Pair(x, y)
+                    Coordinate(x, y)
                 } else {
                     null
                 }
             }
         }.flatten().filterNotNull()
 
-        val first = emptyCells.first()
-        val last = emptyCells.last()
-
-        start = Coordinate(first.first, first.second)
-        stop = Coordinate(last.first, last.second)
+        start = emptyCells.first()
+        stop = emptyCells.last()
 
         _states.add(FieldState(start.x, start.y, FieldState.FieldValue.StartStop))
         _states.add(FieldState(stop.x, stop.y, FieldState.FieldValue.StartStop))
@@ -52,6 +49,15 @@ abstract class BasePathFinder(val maze: List<List<BaseMazeGenerator.FieldValue>>
         state?.let {
             _states.remove(it)
         }
+    }
+
+    protected fun addState(c: Coordinate, state: FieldState.FieldValue) {
+        _states.add(FieldState(c.x, c.y, state))
+    }
+
+    protected fun changeState(c: Coordinate, state: FieldState.FieldValue) {
+        removeState(c)
+        addState(c, state)
     }
 
     protected fun getState(c: Coordinate) = _states.firstOrNull { it.x == c.x && it.y == c.y }?.state

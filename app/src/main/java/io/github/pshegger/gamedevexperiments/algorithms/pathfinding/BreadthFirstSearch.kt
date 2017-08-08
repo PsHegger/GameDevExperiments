@@ -30,7 +30,7 @@ class BreadthFirstSearch(maze: List<List<BaseMazeGenerator.FieldValue>>) : BaseP
                     pathFound = true
                 } else {
                     path.push(dst)
-                    _states.add(FieldState(dst.x, dst.y, FieldState.FieldValue.Active))
+                    addState(dst, FieldState.FieldValue.Active)
                 }
 
             } else {
@@ -41,8 +41,7 @@ class BreadthFirstSearch(maze: List<List<BaseMazeGenerator.FieldValue>>) : BaseP
             visitedCells.add(c)
         } else {
             val c = path.pop()
-            removeState(c)
-            _states.add(FieldState(c.x, c.y, FieldState.FieldValue.Path))
+            changeState(c, FieldState.FieldValue.Path)
         }
     }
 }
