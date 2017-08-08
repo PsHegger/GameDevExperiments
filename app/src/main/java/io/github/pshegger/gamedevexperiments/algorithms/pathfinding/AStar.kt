@@ -6,7 +6,7 @@ import java.util.*
 /**
  * @author gergely.hegedus@tappointment.com
  */
-class AStar(maze: List<List<BaseMazeGenerator.FieldValue>>, val heuristic: (Coordinate, Coordinate) -> Float) : BasePathFinder(maze) {
+class AStar(maze: List<List<BaseMazeGenerator.FieldValue>>, val heuristic: (Coordinate, Coordinate) -> Float, val tieBreaker: Float = 0.0002F) : BasePathFinder(maze) {
     private var pathFound = false
     private var unvisitedNodes = arrayListOf<NodeData>()
     private var visitedNodes = arrayListOf<NodeData>()
@@ -48,7 +48,7 @@ class AStar(maze: List<List<BaseMazeGenerator.FieldValue>>, val heuristic: (Coor
                     changeState(currentNode.c, FieldState.FieldValue.Active)
                 }
 
-                currentNode = unvisitedNodes.filter { it.distance != Int.MAX_VALUE }.minBy { it.distance + heuristic(it.c, stop) }!!
+                currentNode = unvisitedNodes.filter { it.distance != Int.MAX_VALUE }.minBy { it.distance + heuristic(it.c, stop) * (1 + tieBreaker) }!!
             }
         } else {
             pathBackTrack?.let { c ->
