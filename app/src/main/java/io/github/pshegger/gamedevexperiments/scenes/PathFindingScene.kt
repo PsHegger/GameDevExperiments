@@ -25,6 +25,12 @@ class PathFindingScene(val gameSurfaceView: GameSurfaceView) : Scene {
         (Math.abs(stop.x - c.x) + Math.abs(stop.y - c.y)).toFloat()
     }
     private val constantHeuristic: (BasePathFinder.Coordinate, BasePathFinder.Coordinate) -> Float = { _, _ -> 0F }
+    private val euclideanHeuristic: (BasePathFinder.Coordinate, BasePathFinder.Coordinate) -> Float = { c, stop ->
+        val dx = stop.x - c.x
+        val dy = stop.y - c.y
+
+        Math.sqrt(dx * dx + dy * dy.toDouble()).toFloat()
+    }
 
     private val mazeGenerator: BaseMazeGenerator = RandomDepthFirstGenerator()
 
@@ -52,11 +58,15 @@ class PathFindingScene(val gameSurfaceView: GameSurfaceView) : Scene {
             onClick = { pathFinder = BreadthFirstSearch(mazeGenerator.fields) }
         })
 
-        btns.add(Button("A*", width - 400f, height - 120f, width - 240f, height - 40f, btnBgColor, btnBorderColor, btnTextColor, 50f).apply {
+        btns.add(Button("A*M", width - 400f, height - 120f, width - 240f, height - 40f, btnBgColor, btnBorderColor, btnTextColor, 50f).apply {
             onClick = { pathFinder = AStar(mazeGenerator.fields, manhattanHeuristic) }
         })
 
-        btns.add(Button("DIJ", width - 600f, height - 120f, width - 440f, height - 40f, btnBgColor, btnBorderColor, btnTextColor, 50f).apply {
+        btns.add(Button("A*E", width - 600f, height - 120f, width - 440f, height - 40f, btnBgColor, btnBorderColor, btnTextColor, 50f).apply {
+            onClick = { pathFinder = AStar(mazeGenerator.fields, euclideanHeuristic) }
+        })
+
+        btns.add(Button("DIJ", width - 800f, height - 120f, width - 640f, height - 40f, btnBgColor, btnBorderColor, btnTextColor, 50f).apply {
             onClick = { pathFinder = AStar(mazeGenerator.fields, constantHeuristic) }
         })
 
