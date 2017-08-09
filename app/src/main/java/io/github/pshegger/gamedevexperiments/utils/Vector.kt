@@ -1,7 +1,7 @@
 package io.github.pshegger.gamedevexperiments.utils
 
 /**
- * @author gergely.hegedus@tappointment.com
+ * @author pshegger@gmail.com
  */
 data class Vector(val x: Float, val y: Float) {
     fun normalize() = this / length()

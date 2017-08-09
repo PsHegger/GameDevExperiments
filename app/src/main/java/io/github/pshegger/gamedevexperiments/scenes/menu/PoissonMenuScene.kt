@@ -5,7 +5,7 @@ import io.github.pshegger.gamedevexperiments.scenes.PoissonBestCandidateScene
 import io.github.pshegger.gamedevexperiments.scenes.PoissonBridsonScene
 
 /**
- * @author gergely.hegedus@tappointment.com
+ * @author pshegger@gmail.com
  */
 class PoissonMenuScene(gameSurfaceView: GameSurfaceView) : BaseMenuScene(gameSurfaceView) {
     override val title: String

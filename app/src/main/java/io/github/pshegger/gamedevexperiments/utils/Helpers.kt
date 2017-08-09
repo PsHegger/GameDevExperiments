@@ -1,7 +1,7 @@
 package io.github.pshegger.gamedevexperiments.utils
 
 /**
- * @author gergely.hegedus@tappointment.com
+ * @author pshegger@gmail.com
  */
 fun List<Edge>.neighbors(v: Vector): List<Vector> = this.map {
     if (it.start == v) {

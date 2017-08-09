@@ -8,7 +8,7 @@ import io.github.pshegger.gamedevexperiments.Scene
 import io.github.pshegger.gamedevexperiments.hud.Button
 
 /**
- * @author gergely.hegedus@tappointment.com
+ * @author pshegger@gmail.com
  */
 abstract class BaseMenuScene(val gameSurfaceView: GameSurfaceView) : Scene {
     private var width: Int = 0

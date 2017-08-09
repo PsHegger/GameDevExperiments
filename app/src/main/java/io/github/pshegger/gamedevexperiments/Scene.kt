@@ -4,7 +4,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 
 /**
- * @author gergely.hegedus@tappointment.com
+ * @author pshegger@gmail.com
  */
 interface Scene {
     fun sizeChanged(width: Int, height: Int)

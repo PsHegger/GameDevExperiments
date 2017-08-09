@@ -10,7 +10,7 @@ import io.github.pshegger.gamedevexperiments.hud.Button
 import io.github.pshegger.gamedevexperiments.scenes.menu.MazeMenuScene
 
 /**
- * @author gergely.hegedus@tappointment.com
+ * @author pshegger@gmail.com
  */
 class MazeScene(val gameSurfaceView: GameSurfaceView, val generator: BaseMazeGenerator) : Scene {
     private val cellSize = 20

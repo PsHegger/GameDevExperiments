@@ -3,7 +3,7 @@ package io.github.pshegger.gamedevexperiments.algorithms.pathfinding
 import io.github.pshegger.gamedevexperiments.algorithms.maze.BaseMazeGenerator
 
 /**
- * @author gergely.hegedus@tappointment.com
+ * @author pshegger@gmail.com
  */
 abstract class BasePathFinder(val maze: List<List<BaseMazeGenerator.FieldValue>>) {
     val finished: Boolean

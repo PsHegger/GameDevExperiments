@@ -13,7 +13,7 @@ import io.github.pshegger.gamedevexperiments.utils.Velocity
 import java.util.*
 
 /**
- * @author gergely.hegedus@tappointment.com
+ * @author pshegger@gmail.com
  */
 class BouncingBallsScene(val gameSurfaceView: GameSurfaceView) : Scene {
     var balls = listOf<Ball>()

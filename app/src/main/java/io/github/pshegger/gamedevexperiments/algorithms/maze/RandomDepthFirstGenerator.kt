@@ -4,7 +4,7 @@ import io.github.pshegger.gamedevexperiments.utils.random
 import java.util.*
 
 /**
- * @author gergely.hegedus@tappointment.com
+ * @author pshegger@gmail.com
  */
 class RandomDepthFirstGenerator : BaseMazeGenerator() {
     private var started = false

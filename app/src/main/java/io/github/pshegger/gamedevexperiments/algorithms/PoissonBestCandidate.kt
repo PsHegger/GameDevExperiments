@@ -4,7 +4,7 @@ import io.github.pshegger.gamedevexperiments.utils.Vector
 import java.util.*
 
 /**
- * @author gergely.hegedus@tappointment.com
+ * @author pshegger@gmail.com
  */
 class PoissonBestCandidate(val margin: Int = 0, val candidateCount: Int = 10) {
     val points = arrayListOf<Vector>()

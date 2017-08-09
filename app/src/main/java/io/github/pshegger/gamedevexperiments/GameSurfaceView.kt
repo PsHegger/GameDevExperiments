@@ -11,7 +11,7 @@ import android.view.SurfaceView
 import io.github.pshegger.gamedevexperiments.utils.Touch
 
 /**
- * @author gergely.hegedus@tappointment.com
+ * @author pshegger@gmail.com
  */
 class GameSurfaceView(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : SurfaceView(context, attrs, defStyleAttr, defStyleRes), SurfaceHolder.Callback {
     constructor(context: Context) : this(context, null, 0, 0)

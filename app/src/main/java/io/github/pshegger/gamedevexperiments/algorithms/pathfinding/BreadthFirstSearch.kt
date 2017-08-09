@@ -5,7 +5,7 @@ import io.github.pshegger.gamedevexperiments.utils.random
 import java.util.*
 
 /**
- * @author gergely.hegedus@tappointment.com
+ * @author pshegger@gmail.com
  */
 class BreadthFirstSearch(maze: List<List<BaseMazeGenerator.FieldValue>>) : BasePathFinder(maze) {
     private val path: Stack<Coordinate> = Stack()

@@ -11,7 +11,7 @@ import io.github.pshegger.gamedevexperiments.hud.Button
 import io.github.pshegger.gamedevexperiments.scenes.menu.MainMenuScene
 
 /**
- * @author gergely.hegedus@tappointment.com
+ * @author pshegger@gmail.com
  */
 class VoronoiScene(val gameSurfaceView: GameSurfaceView) : Scene {
     var voronoi = Voronoi(emptyList())

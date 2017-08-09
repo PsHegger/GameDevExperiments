@@ -4,7 +4,7 @@ import io.github.pshegger.gamedevexperiments.algorithms.maze.BaseMazeGenerator
 import java.util.*
 
 /**
- * @author gergely.hegedus@tappointment.com
+ * @author pshegger@gmail.com
  */
 class AStar(maze: List<List<BaseMazeGenerator.FieldValue>>, val heuristic: (Coordinate, Coordinate) -> Float, val tieBreaker: Float = 0.0002F) : BasePathFinder(maze) {
     private var pathFound = false

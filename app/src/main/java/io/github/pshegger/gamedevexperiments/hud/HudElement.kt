@@ -4,7 +4,7 @@ import android.graphics.Canvas
 import io.github.pshegger.gamedevexperiments.utils.Touch
 
 /**
- * @author gergely.hegedus@tappointment.com
+ * @author pshegger@gmail.com
  */
 interface HudElement {
     fun update(deltaTime: Long, touch: Touch?)

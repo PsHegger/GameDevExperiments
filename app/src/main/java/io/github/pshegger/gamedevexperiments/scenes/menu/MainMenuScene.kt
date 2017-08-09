@@ -5,7 +5,7 @@ import io.github.pshegger.gamedevexperiments.MainActivity
 import io.github.pshegger.gamedevexperiments.scenes.*
 
 /**
- * @author gergely.hegedus@tappointment.com
+ * @author pshegger@gmail.com
  */
 class MainMenuScene(gameSurfaceView: GameSurfaceView) : BaseMenuScene(gameSurfaceView) {
     override val title: String

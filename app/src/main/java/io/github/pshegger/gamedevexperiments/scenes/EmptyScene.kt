@@ -7,7 +7,7 @@ import io.github.pshegger.gamedevexperiments.Scene
 import io.github.pshegger.gamedevexperiments.scenes.menu.MainMenuScene
 
 /**
- * @author gergely.hegedus@tappointment.com
+ * @author pshegger@gmail.com
  */
 class EmptyScene(val gameSurfaceView: GameSurfaceView) : Scene {
     override fun sizeChanged(width: Int, height: Int) {

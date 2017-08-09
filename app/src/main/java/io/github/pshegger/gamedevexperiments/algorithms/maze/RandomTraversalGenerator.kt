@@ -4,7 +4,7 @@ import io.github.pshegger.gamedevexperiments.utils.random
 import kotlin.collections.ArrayList
 
 /**
- * @author gergely.hegedus@tappointment.com
+ * @author pshegger@gmail.com
  */
 class RandomTraversalGenerator : BaseMazeGenerator() {
     private var started: Boolean = false

@@ -6,7 +6,7 @@ import android.graphics.RectF
 import io.github.pshegger.gamedevexperiments.utils.Touch
 
 /**
- * @author gergely.hegedus@tappointment.com
+ * @author pshegger@gmail.com
  */
 class Button(val text: String, left: Float, top: Float, right: Float, bottom: Float, val bgColor: Int, val borderColor: Int, val textColor: Int, val textSize: Float) : HudElement {
     var onClick: () -> Unit = {}

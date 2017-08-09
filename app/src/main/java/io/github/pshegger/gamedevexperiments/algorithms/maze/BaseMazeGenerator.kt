@@ -3,7 +3,7 @@ package io.github.pshegger.gamedevexperiments.algorithms.maze
 import io.github.pshegger.gamedevexperiments.utils.times
 
 /**
- * @author gergely.hegedus@tappointment.com
+ * @author pshegger@gmail.com
  */
 abstract class BaseMazeGenerator {
     enum class FieldValue {

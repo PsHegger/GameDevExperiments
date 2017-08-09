@@ -10,7 +10,7 @@ import io.github.pshegger.gamedevexperiments.hud.Button
 import io.github.pshegger.gamedevexperiments.scenes.menu.PoissonMenuScene
 
 /**
- * @author gergely.hegedus@tappointment.com
+ * @author pshegger@gmail.com
  */
 class PoissonBestCandidateScene(val gameSurfaceView: GameSurfaceView) : Scene {
     val algo = PoissonBestCandidate(margin = 5)

@@ -14,7 +14,7 @@ import io.github.pshegger.gamedevexperiments.hud.Button
 import io.github.pshegger.gamedevexperiments.scenes.menu.MazeMenuScene
 
 /**
- * @author gergely.hegedus@tappointment.com
+ * @author pshegger@gmail.com
  */
 class PathFindingScene(val gameSurfaceView: GameSurfaceView) : Scene {
     private val btnBgColor = Color.argb(150, 0, 0, 0)

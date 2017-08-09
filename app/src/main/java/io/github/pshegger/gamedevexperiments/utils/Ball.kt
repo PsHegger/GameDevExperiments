@@ -4,7 +4,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 
 /**
- * @author gergely.hegedus@tappointment.com
+ * @author pshegger@gmail.com
  */
 data class Ball(var c: Vector, var r: Float, val initialColor: Int, var v: Velocity) {
     val paint = Paint().apply {

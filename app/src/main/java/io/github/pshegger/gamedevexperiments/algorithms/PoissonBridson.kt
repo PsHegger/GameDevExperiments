@@ -6,7 +6,7 @@ import io.github.pshegger.gamedevexperiments.utils.random
 import java.util.*
 
 /**
- * @author gergely.hegedus@tappointment.com
+ * @author pshegger@gmail.com
  */
 class PoissonBridson(val margin: Int = 0, val radius: Int = 40, val candidateCount: Int = 20) {
     val points: List<PointState>

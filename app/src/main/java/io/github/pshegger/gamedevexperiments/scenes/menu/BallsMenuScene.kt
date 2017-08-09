@@ -5,7 +5,7 @@ import io.github.pshegger.gamedevexperiments.scenes.BouncingBallsScene
 import io.github.pshegger.gamedevexperiments.scenes.SimpleBallsScene
 
 /**
- * @author gergely.hegedus@tappointment.com
+ * @author pshegger@gmail.com
  */
 class BallsMenuScene(gameSurfaceView: GameSurfaceView) : BaseMenuScene(gameSurfaceView) {
     override val title: String

@@ -7,7 +7,7 @@ import io.github.pshegger.gamedevexperiments.scenes.MazeScene
 import io.github.pshegger.gamedevexperiments.scenes.PathFindingScene
 
 /**
- * @author gergely.hegedus@tappointment.com
+ * @author pshegger@gmail.com
  */
 class MazeMenuScene(gameSurfaceView: GameSurfaceView) : BaseMenuScene(gameSurfaceView) {
     override fun onBackPressed() {
