@@ -19,7 +19,7 @@ class MainMenuScene(gameSurfaceView: GameSurfaceView) : BaseMenuScene(gameSurfac
         get() = listOf(
                 MenuItem("Balls", BallsMenuScene(gameSurfaceView)),
                 MenuItem("Poisson", PoissonMenuScene(gameSurfaceView)),
-                MenuItem("Voronoi", VoronoiScene(gameSurfaceView)),
-                MenuItem("Maze", MazeMenuScene(gameSurfaceView))
+                MenuItem("Maze", MazeMenuScene(gameSurfaceView)),
+                MenuItem("Map Generation", MapGenerationMenuScene(gameSurfaceView))
         )
 }
