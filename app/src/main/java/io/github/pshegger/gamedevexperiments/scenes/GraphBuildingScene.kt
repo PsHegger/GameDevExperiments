@@ -14,26 +14,38 @@ import io.github.pshegger.gamedevexperiments.scenes.menu.MapGenerationMenuScene
  * @author pshegger@gmail.com
  */
 class GraphBuildingScene(val gameSurfaceView: GameSurfaceView) : Scene {
-    var generator = GraphGenerator(emptyList())
+    private var generator = GraphGenerator(emptyList())
     var width: Int = 0
     var height: Int = 0
 
     private val pointPaint = Paint()
+    private val edgePaint = Paint().apply {
+        color = Color.BLUE
+        strokeWidth = 5f
+    }
 
-    var btnRegenerate: Button? = null
+    private var btnRestart: Button? = null
+    private var btnInstant: Button? = null
 
     override fun sizeChanged(width: Int, height: Int) {
         this.width = width
         this.height = height
 
-        btnRegenerate = Button("GEN", width - 200f, height - 120f, width - 40f, height - 40f, Color.TRANSPARENT, Color.GRAY, Color.BLACK, 50f).apply {
-            onClick = { generate() }
+        btnRestart = Button("RES", width - 200f, height - 120f, width - 40f, height - 40f, Color.TRANSPARENT, Color.GRAY, Color.BLACK, 50f).apply {
+            onClick = { initGenerator() }
         }
 
-        generate()
+        btnInstant = Button("INS", width - 400f, height - 120f, width - 240f, height - 40f, Color.TRANSPARENT, Color.GRAY, Color.BLACK, 50f).apply {
+            onClick = {
+                initGenerator()
+                generator.generateAll()
+            }
+        }
+
+        initGenerator()
     }
 
-    private fun generate() {
+    private fun initGenerator() {
         val poisson = PoissonBridson(margin = 5, radius = 80)
         poisson.reset(width, height)
 
@@ -42,17 +54,27 @@ class GraphBuildingScene(val gameSurfaceView: GameSurfaceView) : Scene {
     }
 
     override fun update(deltaTime: Long) {
-        btnRegenerate?.update(deltaTime, gameSurfaceView.touch)
+        if (generator.canGenerateMore) {
+            generator.generateNextEdge()
+        }
+
+        btnRestart?.update(deltaTime, gameSurfaceView.touch)
+        btnInstant?.update(deltaTime, gameSurfaceView.touch)
     }
 
     override fun render(canvas: Canvas) {
         canvas.drawColor(Color.rgb(154, 206, 235))
 
+        generator.edges.forEach {
+            canvas.drawLine(it.start.x, it.start.y, it.end.x, it.end.y, edgePaint)
+        }
+
         generator.points.forEach {
             canvas.drawCircle(it.x, it.y, 5f, pointPaint)
         }
 
-        btnRegenerate?.render(canvas)
+        btnRestart?.render(canvas)
+        btnInstant?.render(canvas)
     }
 
     override fun onBackPressed() {
