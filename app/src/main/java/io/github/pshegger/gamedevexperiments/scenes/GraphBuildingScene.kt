@@ -11,7 +11,7 @@ import io.github.pshegger.gamedevexperiments.hud.Button
 import io.github.pshegger.gamedevexperiments.scenes.menu.MapGenerationMenuScene
 
 /**
- * @author gergely.hegedus@tappointment.com
+ * @author pshegger@gmail.com
  */
 class GraphBuildingScene(val gameSurfaceView: GameSurfaceView) : Scene {
     var generator = GraphGenerator(emptyList())

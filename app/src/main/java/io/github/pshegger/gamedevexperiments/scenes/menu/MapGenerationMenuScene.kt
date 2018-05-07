@@ -6,7 +6,7 @@ import io.github.pshegger.gamedevexperiments.scenes.GraphBuildingScene
 import io.github.pshegger.gamedevexperiments.scenes.VoronoiScene
 
 /**
- * @author gergely.hegedus@tappointment.com
+ * @author pshegger@gmail.com
  */
 class MapGenerationMenuScene(gameSurfaceView: GameSurfaceView) : BaseMenuScene(gameSurfaceView) {
     override val scenes: List<MenuItem>
