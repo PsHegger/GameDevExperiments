@@ -87,7 +87,7 @@ class GameSurfaceView(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
                 }
 
                 update(deltaTime)
-                val canvas = gameSurfaceView.holder.lockCanvas()
+                val canvas = gameSurfaceView.holder.lockCanvas() ?: continue
                 render(canvas)
                 gameSurfaceView.holder.unlockCanvasAndPost(canvas)
 
