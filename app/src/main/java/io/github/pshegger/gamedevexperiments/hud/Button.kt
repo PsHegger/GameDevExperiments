@@ -8,10 +8,10 @@ import io.github.pshegger.gamedevexperiments.utils.Touch
 /**
  * @author pshegger@gmail.com
  */
-class Button(val text: String, left: Float, top: Float, right: Float, bottom: Float, val bgColor: Int, val borderColor: Int, val textColor: Int, val textSize: Float) : HudElement {
+class Button(val text: String, left: Float, top: Float, right: Float, bottom: Float, private val bgColor: Int, private val borderColor: Int, val textColor: Int, val textSize: Float) : HudElement {
     var onClick: () -> Unit = {}
 
-    val textPaint: Paint = Paint().apply {
+    private val textPaint: Paint = Paint().apply {
         isAntiAlias = true
         textSize = this@Button.textSize
         style = Paint.Style.FILL
@@ -19,19 +19,19 @@ class Button(val text: String, left: Float, top: Float, right: Float, bottom: Fl
         color = textColor
     }
 
-    val borderPaint = Paint().apply {
+    private val borderPaint = Paint().apply {
         isAntiAlias = true
         style = Paint.Style.STROKE
         color = borderColor
         strokeWidth = 3f
     }
 
-    val bgPaint = Paint().apply {
+    private val bgPaint = Paint().apply {
         style = Paint.Style.FILL
         color = bgColor
     }
 
-    val rect = RectF(left, top, right, bottom)
+    private val rect = RectF(left, top, right, bottom)
 
     val width = right - left
     val height = bottom - top

@@ -5,20 +5,20 @@ import android.graphics.Color
 import android.graphics.Paint
 import io.github.pshegger.gamedevexperiments.GameSurfaceView
 import io.github.pshegger.gamedevexperiments.Scene
+import io.github.pshegger.gamedevexperiments.algorithms.GraphGenerator
 import io.github.pshegger.gamedevexperiments.algorithms.PoissonBridson
-import io.github.pshegger.gamedevexperiments.algorithms.Voronoi
 import io.github.pshegger.gamedevexperiments.hud.Button
 import io.github.pshegger.gamedevexperiments.scenes.menu.MapGenerationMenuScene
 
 /**
- * @author pshegger@gmail.com
+ * @author gergely.hegedus@tappointment.com
  */
-class VoronoiScene(val gameSurfaceView: GameSurfaceView) : Scene {
-    var voronoi = Voronoi(emptyList())
+class GraphBuildingScene(val gameSurfaceView: GameSurfaceView) : Scene {
+    var generator = GraphGenerator(emptyList())
     var width: Int = 0
     var height: Int = 0
 
-    val pointPaint = Paint()
+    private val pointPaint = Paint()
 
     var btnRegenerate: Button? = null
 
@@ -38,7 +38,7 @@ class VoronoiScene(val gameSurfaceView: GameSurfaceView) : Scene {
         poisson.reset(width, height)
 
         poisson.generateAll()
-        voronoi = Voronoi(poisson.points.map { it.p })
+        generator = GraphGenerator(poisson.points.map { it.p })
     }
 
     override fun update(deltaTime: Long) {
@@ -48,7 +48,7 @@ class VoronoiScene(val gameSurfaceView: GameSurfaceView) : Scene {
     override fun render(canvas: Canvas) {
         canvas.drawColor(Color.rgb(154, 206, 235))
 
-        voronoi.points.forEach {
+        generator.points.forEach {
             canvas.drawCircle(it.x, it.y, 5f, pointPaint)
         }
 

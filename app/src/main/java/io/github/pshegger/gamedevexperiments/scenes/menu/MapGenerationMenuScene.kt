@@ -2,6 +2,7 @@ package io.github.pshegger.gamedevexperiments.scenes.menu
 
 import io.github.pshegger.gamedevexperiments.GameSurfaceView
 import io.github.pshegger.gamedevexperiments.scenes.EmptyScene
+import io.github.pshegger.gamedevexperiments.scenes.GraphBuildingScene
 import io.github.pshegger.gamedevexperiments.scenes.VoronoiScene
 
 /**
@@ -10,7 +11,7 @@ import io.github.pshegger.gamedevexperiments.scenes.VoronoiScene
 class MapGenerationMenuScene(gameSurfaceView: GameSurfaceView) : BaseMenuScene(gameSurfaceView) {
     override val scenes: List<MenuItem>
         get() = listOf(
-                MenuItem("Graph Building", EmptyScene(gameSurfaceView)),
+                MenuItem("Graph Building", GraphBuildingScene(gameSurfaceView)),
                 MenuItem("Perlin Noise", EmptyScene(gameSurfaceView)),
                 MenuItem("Voronoi", VoronoiScene(gameSurfaceView)),
                 MenuItem("Map Generation", EmptyScene(gameSurfaceView))
