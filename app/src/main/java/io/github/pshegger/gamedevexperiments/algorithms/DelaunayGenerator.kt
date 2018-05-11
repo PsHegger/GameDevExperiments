@@ -7,7 +7,7 @@ import io.github.pshegger.gamedevexperiments.utils.random
 /**
  * @author pshegger@gmail.com
  */
-class GraphGenerator(val points: List<Vector>) {
+class DelaunayGenerator(val points: List<Vector>) {
     val edges: List<Edge>
         get() = triangles.flatMap { it.edges() }
     val canGenerateMore: Boolean

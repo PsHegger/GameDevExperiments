@@ -5,7 +5,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import io.github.pshegger.gamedevexperiments.GameSurfaceView
 import io.github.pshegger.gamedevexperiments.Scene
-import io.github.pshegger.gamedevexperiments.algorithms.GraphGenerator
+import io.github.pshegger.gamedevexperiments.algorithms.DelaunayGenerator
 import io.github.pshegger.gamedevexperiments.algorithms.PoissonBridson
 import io.github.pshegger.gamedevexperiments.hud.Button
 import io.github.pshegger.gamedevexperiments.scenes.menu.MapGenerationMenuScene
@@ -13,8 +13,8 @@ import io.github.pshegger.gamedevexperiments.scenes.menu.MapGenerationMenuScene
 /**
  * @author pshegger@gmail.com
  */
-class GraphBuildingScene(val gameSurfaceView: GameSurfaceView) : Scene {
-    private var generator = GraphGenerator(emptyList())
+class DelaunayBuildingScene(val gameSurfaceView: GameSurfaceView) : Scene {
+    private var generator = DelaunayGenerator(emptyList())
     var width: Int = 0
     var height: Int = 0
 
@@ -50,7 +50,7 @@ class GraphBuildingScene(val gameSurfaceView: GameSurfaceView) : Scene {
         poisson.reset(width, height)
 
         poisson.generateAll()
-        generator = GraphGenerator(poisson.points.map { it.p })
+        generator = DelaunayGenerator(poisson.points.map { it.p })
         generator.reset(width, height)
     }
 
