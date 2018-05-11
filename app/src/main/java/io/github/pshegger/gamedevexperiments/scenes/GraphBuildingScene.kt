@@ -51,6 +51,7 @@ class GraphBuildingScene(val gameSurfaceView: GameSurfaceView) : Scene {
 
         poisson.generateAll()
         generator = GraphGenerator(poisson.points.map { it.p })
+        generator.reset(width, height)
     }
 
     override fun update(deltaTime: Long) {
