@@ -46,7 +46,7 @@ class DelaunayBuildingScene(val gameSurfaceView: GameSurfaceView) : Scene {
     }
 
     private fun initGenerator() {
-        val poisson = PoissonBridson(margin = 5, radius = 80)
+        val poisson = PoissonBridson(margin = 5, radius = 100)
         poisson.reset(width, height)
 
         poisson.generateAll()

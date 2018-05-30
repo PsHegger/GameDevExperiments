@@ -38,6 +38,12 @@ class DelaunayGenerator(val points: List<Vector>) {
     }
 
     fun generateNextEdge() {
+        val pair = nonDelaunayPair()
+        if (pair != null) {
+            makeFlip(pair)
+            return
+        }
+
         if (unprocessedPoints.isEmpty()) {
             val finalTriangles = triangles.filterNot { it.isHelper(width, height) }
             triangles.clear()
@@ -59,6 +65,31 @@ class DelaunayGenerator(val points: List<Vector>) {
         while (canGenerateMore) {
             generateNextEdge()
         }
+    }
+
+    private fun makeFlip(p: Pair<Triangle, Triangle>) {
+        val t1 = p.first
+        val t2 = p.second
+        triangles.remove(t1)
+        triangles.remove(t2)
+
+        val commonEdge = t1.commonEdge(t2)
+        if (commonEdge != null) {
+            val o1 = t1.thirdPoint(commonEdge.start, commonEdge.end)
+            val o2 = t2.thirdPoint(commonEdge.start, commonEdge.end)
+            if (o1 != null && o2 != null) {
+                triangles.add(Triangle(o1, commonEdge.start, o2))
+                triangles.add(Triangle(o2, commonEdge.end, o1))
+            }
+        }
+    }
+
+    private fun nonDelaunayPair(): Pair<Triangle, Triangle>? = triangles.flatMap { t1 ->
+        triangles.others(t1).filter { t2 -> t1.commonEdge(t2) != null }.map { Pair(t1, it) }
+    }.find { p ->
+        val commonEdge = p.first.commonEdge(p.second)!!
+        val otherPoint = p.second.thirdPoint(commonEdge.start, commonEdge.end)!!
+        p.first.circumscribedCircle.contains(otherPoint)
     }
 
     private fun containsHelperTriangle() = triangles.any { it.isHelper(width, height) }

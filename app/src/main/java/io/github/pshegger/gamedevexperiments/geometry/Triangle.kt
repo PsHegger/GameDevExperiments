@@ -37,4 +37,12 @@ data class Triangle(val a: Vector, val b: Vector, val c: Vector) {
 
         return aa in 0.0..1.0 && bb in 0.0..1.0 && cc in 0.0..1.0
     }
+
+    fun commonEdge(o: Triangle): Edge? = edges.find { e1 -> o.edges.any { e2 -> e1 == e2 } }
+    fun thirdPoint(p1: Vector, p2: Vector): Vector? = when (p1) {
+        a -> if (p2 == b) c else if (p2 == c) b else null
+        b -> if (p2 == a) c else if (p2 == c) a else null
+        c -> if (p2 == a) b else if (p2 == b) a else null
+        else -> null
+    }
 }
