@@ -1,15 +1,13 @@
 package io.github.pshegger.gamedevexperiments.algorithms
 
-import io.github.pshegger.gamedevexperiments.utils.Edge
-import io.github.pshegger.gamedevexperiments.utils.Vector
-import io.github.pshegger.gamedevexperiments.utils.random
+import io.github.pshegger.gamedevexperiments.utils.*
 
 /**
  * @author pshegger@gmail.com
  */
 class DelaunayGenerator(val points: List<Vector>) {
     val edges: List<Edge>
-        get() = triangles.flatMap { it.edges() }
+        get() = triangles.flatMap { it.edges }
     val canGenerateMore: Boolean
         get() = unprocessedPoints.isNotEmpty() || containsHelperTriangle()
 
@@ -61,25 +59,6 @@ class DelaunayGenerator(val points: List<Vector>) {
     }
 
     private fun containsHelperTriangle() = triangles.any { it.isHelper(width, height) }
-
-    data class Triangle(val a: Vector, val b: Vector, val c: Vector) {
-        fun edges(): List<Edge> = listOf(
-                Edge(a, b),
-                Edge(a, c),
-                Edge(b, c)
-        )
-
-        fun contains(p: Vector): Boolean {
-            val d = ((b.y - c.y) * (a.x - c.x) + (c.x - b.x) * (a.y - c.y))
-            val aa = ((b.y - c.y) * (p.x - c.x) + (c.x - b.x) * (p.y - c.y)) / d
-            val bb = ((c.y - a.y) * (p.x - c.x) + (a.x - c.x) * (p.y - c.y)) / d
-            val cc = 1 - aa - bb
-
-            return aa in 0.0..1.0 && bb in 0.0..1.0 && cc in 0.0..1.0
-        }
-
-        fun isHelper(width: Int, height: Int) = isPointHelper(a, width, height) || isPointHelper(b, width, height) || isPointHelper(c, width, height)
-
-        private fun isPointHelper(v: Vector, width: Int, height: Int) = v.x < 0 || v.x > width || v.y < 0 || v.y > height
-    }
+    private fun Triangle.isHelper(width: Int, height: Int) = isPointHelper(a, width, height) || isPointHelper(b, width, height) || isPointHelper(c, width, height)
+    private fun isPointHelper(v: Vector, width: Int, height: Int) = v.x < 0 || v.x > width || v.y < 0 || v.y > height
 }
