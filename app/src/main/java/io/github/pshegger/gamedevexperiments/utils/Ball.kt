@@ -2,6 +2,8 @@ package io.github.pshegger.gamedevexperiments.utils
 
 import android.graphics.Canvas
 import android.graphics.Paint
+import io.github.pshegger.gamedevexperiments.geometry.Vector
+import io.github.pshegger.gamedevexperiments.geometry.Velocity
 
 /**
  * @author pshegger@gmail.com

@@ -1,6 +1,6 @@
 package io.github.pshegger.gamedevexperiments.algorithms
 
-import io.github.pshegger.gamedevexperiments.utils.Vector
+import io.github.pshegger.gamedevexperiments.geometry.Vector
 import java.util.*
 
 /**
@@ -28,7 +28,7 @@ class PoissonBestCandidate(val margin: Int = 0, val candidateCount: Int = 10) {
         }
 
         var bestCandidate: Vector? = null
-        var bestDistance: Float = 0f
+        var bestDistance = 0f
 
         (1..candidateCount).forEach {
             val c = randomPoint()

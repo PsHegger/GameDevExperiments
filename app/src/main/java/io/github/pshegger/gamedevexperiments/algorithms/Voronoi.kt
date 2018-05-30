@@ -1,6 +1,6 @@
 package io.github.pshegger.gamedevexperiments.algorithms
 
-import io.github.pshegger.gamedevexperiments.utils.Vector
+import io.github.pshegger.gamedevexperiments.geometry.Vector
 
 /**
  * @author pshegger@gmail.com

@@ -1,7 +1,7 @@
 package io.github.pshegger.gamedevexperiments.algorithms
 
 import android.graphics.RectF
-import io.github.pshegger.gamedevexperiments.utils.Vector
+import io.github.pshegger.gamedevexperiments.geometry.Vector
 import io.github.pshegger.gamedevexperiments.utils.random
 import java.util.*
 

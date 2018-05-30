@@ -1,4 +1,4 @@
-package io.github.pshegger.gamedevexperiments.utils
+package io.github.pshegger.gamedevexperiments.geometry
 
 /**
  * @author pshegger@gmail.com

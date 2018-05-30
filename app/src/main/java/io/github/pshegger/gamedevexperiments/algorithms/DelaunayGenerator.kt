@@ -1,5 +1,8 @@
 package io.github.pshegger.gamedevexperiments.algorithms
 
+import io.github.pshegger.gamedevexperiments.geometry.Edge
+import io.github.pshegger.gamedevexperiments.geometry.Triangle
+import io.github.pshegger.gamedevexperiments.geometry.Vector
 import io.github.pshegger.gamedevexperiments.utils.*
 
 /**

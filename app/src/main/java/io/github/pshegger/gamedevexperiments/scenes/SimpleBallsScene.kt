@@ -8,8 +8,8 @@ import io.github.pshegger.gamedevexperiments.Scene
 import io.github.pshegger.gamedevexperiments.hud.Button
 import io.github.pshegger.gamedevexperiments.scenes.menu.BallsMenuScene
 import io.github.pshegger.gamedevexperiments.utils.Ball
-import io.github.pshegger.gamedevexperiments.utils.Vector
-import io.github.pshegger.gamedevexperiments.utils.Velocity
+import io.github.pshegger.gamedevexperiments.geometry.Vector
+import io.github.pshegger.gamedevexperiments.geometry.Velocity
 import java.util.*
 
 /**

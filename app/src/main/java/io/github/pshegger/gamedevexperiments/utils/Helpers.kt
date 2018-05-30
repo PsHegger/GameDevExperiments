@@ -1,5 +1,8 @@
 package io.github.pshegger.gamedevexperiments.utils
 
+import io.github.pshegger.gamedevexperiments.geometry.Edge
+import io.github.pshegger.gamedevexperiments.geometry.Vector
+
 /**
  * @author pshegger@gmail.com
  */
