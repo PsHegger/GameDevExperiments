@@ -1,5 +1,6 @@
 package io.github.pshegger.gamedevexperiments.algorithms
 
+import android.util.Log
 import io.github.pshegger.gamedevexperiments.geometry.Edge
 import io.github.pshegger.gamedevexperiments.geometry.Triangle
 import io.github.pshegger.gamedevexperiments.geometry.Vector
@@ -17,6 +18,7 @@ class DelaunayGenerator(val points: List<Vector>) {
     private val unprocessedPoints = arrayListOf<Vector>().apply { addAll(points) }
 
     private val triangles = arrayListOf<Triangle>()
+    private val badEdges = mutableSetOf<Edge>()
 
     private var width: Int = 0
     private var height: Int = 0
@@ -38,10 +40,21 @@ class DelaunayGenerator(val points: List<Vector>) {
     }
 
     fun generateNextEdge() {
-        val pair = nonDelaunayPair()
-        if (pair != null) {
-            makeFlip(pair)
-            return
+        while (badEdges.isNotEmpty()) {
+            val edge = badEdges.first()
+            badEdges.remove(edge)
+            val ts = triangles.filter { t -> t.edges.any { e -> e == edge } }
+
+            if (ts.size == 2) {
+                val t1 = ts[0]
+                val t2 = ts[1]
+                val op1 = t1.thirdPoint(edge.start, edge.end)!!
+                val op2 = t2.thirdPoint(edge.start, edge.end)!!
+                if (t2.circumscribedCircle.contains(op1) || t1.circumscribedCircle.contains(op2)) {
+                    makeFlip(Pair(t1, t2))
+                    return
+                }
+            }
         }
 
         if (unprocessedPoints.isEmpty()) {
@@ -59,6 +72,8 @@ class DelaunayGenerator(val points: List<Vector>) {
         triangles.add(Triangle(container.a, container.b, p))
         triangles.add(Triangle(container.a, container.c, p))
         triangles.add(Triangle(container.b, container.c, p))
+
+        badEdges.addAll(container.edges)
     }
 
     fun generateAll() {
@@ -80,16 +95,13 @@ class DelaunayGenerator(val points: List<Vector>) {
             if (o1 != null && o2 != null) {
                 triangles.add(Triangle(o1, commonEdge.start, o2))
                 triangles.add(Triangle(o2, commonEdge.end, o1))
+
+                badEdges.add(Edge(o1, commonEdge.start))
+                badEdges.add(Edge(o2, commonEdge.start))
+                badEdges.add(Edge(o1, commonEdge.end))
+                badEdges.add(Edge(o2, commonEdge.end))
             }
         }
-    }
-
-    private fun nonDelaunayPair(): Pair<Triangle, Triangle>? = triangles.flatMap { t1 ->
-        triangles.others(t1).filter { t2 -> t1.commonEdge(t2) != null }.map { Pair(t1, it) }
-    }.find { p ->
-        val commonEdge = p.first.commonEdge(p.second)!!
-        val otherPoint = p.second.thirdPoint(commonEdge.start, commonEdge.end)!!
-        p.first.circumscribedCircle.contains(otherPoint)
     }
 
     private fun containsHelperTriangle() = triangles.any { it.isHelper(width, height) }
