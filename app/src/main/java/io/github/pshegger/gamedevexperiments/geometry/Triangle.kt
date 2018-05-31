@@ -10,24 +10,14 @@ data class Triangle(val a: Vector, val b: Vector, val c: Vector) {
             Edge(b, c)
     )
 
-    val circumscribedCircle: Circle by lazy {
-        val e1Middle = edges[0].middle
-        val e1Dir = edges[0].direction
-        val a1 = e1Dir.x
-        val b1 = e1Dir.y
-        val c1 = a1 * e1Middle.x + b1 * e1Middle.y
+    val circumscribedCircleCenter: Vector by lazy {
+        val l1 = Line.perpendicularBiselector(edges[0])
+        val l2 = Line.perpendicularBiselector(edges[1])
 
-        val e2Middle = edges[1].middle
-        val e2Dir = edges[1].direction
-        val a2 = e2Dir.x
-        val b2 = e2Dir.y
-        val c2 = a2 * e2Middle.x + b2 * e2Middle.y
-
-        val cx = ((c1 * b2) - (c2 * b1)) / (a1 * b2 - a2 * b1)
-        val cy = (c1 - a1 * cx) / b1
-        val center = Vector(cx, cy)
-        Circle(center, center.distance(a))
+        l1.intersection(l2)
     }
+
+    val circumscribedCircle: Circle by lazy { Circle(circumscribedCircleCenter, circumscribedCircleCenter.distance(a)) }
 
     fun contains(p: Vector): Boolean {
         val d = ((b.y - c.y) * (a.x - c.x) + (c.x - b.x) * (a.y - c.y))
