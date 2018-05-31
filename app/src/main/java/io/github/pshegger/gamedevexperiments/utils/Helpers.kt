@@ -18,3 +18,5 @@ fun <T> List<T>.random(): T = this[Math.floor(Math.random() * this.size).toInt()
 operator fun <T> List<T>.times(o: List<T>) = this.flatMap { a -> o.map { b -> kotlin.collections.listOf(a, b) } }
 
 fun <T> List<T>.others(o: T) = filterNot { it == o }
+
+fun Iterable<Edge>.toLinesArray() = flatMap { listOf(it.start.x, it.start.y, it.end.x, it.end.y) }.toFloatArray()

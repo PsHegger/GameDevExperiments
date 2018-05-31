@@ -10,6 +10,7 @@ import io.github.pshegger.gamedevexperiments.geometry.Edge
 import io.github.pshegger.gamedevexperiments.geometry.Vector
 import io.github.pshegger.gamedevexperiments.hud.Button
 import io.github.pshegger.gamedevexperiments.scenes.menu.MapGenerationMenuScene
+import io.github.pshegger.gamedevexperiments.utils.toLinesArray
 
 /**
  * @author pshegger@gmail.com
@@ -85,9 +86,7 @@ class MapGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
     }
 
     private fun renderDelaunay(canvas: Canvas) {
-        generator.delaunayEdges.forEach {
-            canvas.drawLine(it.start.x, it.start.y, it.end.x, it.end.y, delaunayEdgePaint)
-        }
+        canvas.drawLines(generator.delaunayEdges.toLinesArray(), delaunayEdgePaint)
 
         generator.delaunayPoints.forEach {
             canvas.drawCircle(it.x, it.y, 5f, pointPaint)
@@ -96,12 +95,10 @@ class MapGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
 
     private fun renderVoronoi(canvas: Canvas, drawDelaunayEdges: Boolean) {
         if (drawDelaunayEdges) {
-            generator.delaunayEdges.forEach {
-                canvas.drawLine(it.start.x, it.start.y, it.end.x, it.end.y, delaunayEdgePaint)
-            }
+            canvas.drawLines(generator.delaunayEdges.toLinesArray(), delaunayEdgePaint)
         }
 
-        generator.voronoiEdges.forEach { it.render(canvas, voronoiEdgePaint) }
+        canvas.drawLines(generator.voronoiEdges.toLinesArray(), voronoiEdgePaint)
 
         generator.voronoiPoints.forEach {
             pointPaint.color = if (it.isActive) Color.RED else Color.BLACK
@@ -115,9 +112,5 @@ class MapGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
 
     private fun Vector.render(canvas: Canvas, paint: Paint) {
         canvas.drawCircle(x, y, 5f, paint)
-    }
-
-    private fun Edge.render(canvas: Canvas, paint: Paint) {
-        canvas.drawLine(start.x, start.y, end.x, end.y, paint)
     }
 }

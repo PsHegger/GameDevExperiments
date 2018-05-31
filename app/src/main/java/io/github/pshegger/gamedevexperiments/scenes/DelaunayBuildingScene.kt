@@ -9,6 +9,7 @@ import io.github.pshegger.gamedevexperiments.algorithms.DelaunayGenerator
 import io.github.pshegger.gamedevexperiments.algorithms.PoissonBridson
 import io.github.pshegger.gamedevexperiments.hud.Button
 import io.github.pshegger.gamedevexperiments.scenes.menu.MapGenerationMenuScene
+import io.github.pshegger.gamedevexperiments.utils.toLinesArray
 
 /**
  * @author pshegger@gmail.com
@@ -69,9 +70,7 @@ class DelaunayBuildingScene(val gameSurfaceView: GameSurfaceView) : Scene {
     override fun render(canvas: Canvas) {
         canvas.drawColor(Color.rgb(154, 206, 235))
 
-        generator.edges.forEach {
-            canvas.drawLine(it.start.x, it.start.y, it.end.x, it.end.y, edgePaint)
-        }
+        canvas.drawLines(generator.edges.toLinesArray(), edgePaint)
 
         generator.points.forEach {
             canvas.drawCircle(it.x, it.y, 5f, pointPaint)
