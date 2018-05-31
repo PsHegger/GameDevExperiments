@@ -19,7 +19,7 @@ class MapGenerator {
         get() = delaunayGenerator.points
 
     val voronoiEdges: List<Edge>
-        get() = voronoi.polygons.flatMap { it.edges }.distinct()
+        get() = voronoi.edges
     val voronoiPoints: List<Voronoi.PointState>
         get() = voronoi.points
 

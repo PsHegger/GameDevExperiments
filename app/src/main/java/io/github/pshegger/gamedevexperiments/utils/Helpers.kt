@@ -20,3 +20,4 @@ operator fun <T> List<T>.times(o: List<T>) = this.flatMap { a -> o.map { b -> ko
 fun <T> List<T>.others(o: T) = filterNot { it == o }
 
 fun Iterable<Edge>.toLinesArray() = flatMap { listOf(it.start.x, it.start.y, it.end.x, it.end.y) }.toFloatArray()
+fun Iterable<Vector>.toPointsArray() = flatMap { listOf(it.x, it.y) }.toFloatArray()

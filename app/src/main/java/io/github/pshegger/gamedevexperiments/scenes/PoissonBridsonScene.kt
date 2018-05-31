@@ -8,6 +8,7 @@ import io.github.pshegger.gamedevexperiments.Scene
 import io.github.pshegger.gamedevexperiments.algorithms.PoissonBridson
 import io.github.pshegger.gamedevexperiments.hud.Button
 import io.github.pshegger.gamedevexperiments.scenes.menu.PoissonMenuScene
+import io.github.pshegger.gamedevexperiments.utils.toPointsArray
 
 /**
  * @author pshegger@gmail.com
@@ -17,11 +18,12 @@ class PoissonBridsonScene(val gameSurfaceView: GameSurfaceView) : Scene {
     var width: Int = 0
     var height: Int = 0
 
-    val pointPaint = Paint()
-    val redPointPaint = Paint().apply {
-        color = Color.RED
+    private val pointPaint = Paint().apply {
+        strokeCap = Paint.Cap.ROUND
+        strokeWidth = 10f
+        isAntiAlias = true
     }
-    val countPaint = Paint().apply {
+    private val countPaint = Paint().apply {
         textSize = 42f
         isAntiAlias = true
         color = Color.GRAY
@@ -60,10 +62,10 @@ class PoissonBridsonScene(val gameSurfaceView: GameSurfaceView) : Scene {
     override fun render(canvas: Canvas) {
         canvas.drawColor(Color.rgb(154, 206, 235))
 
-        algo.points.forEach {
-            val paint = if (it.active) redPointPaint else pointPaint
-            canvas.drawCircle(it.p.x, it.p.y, 5f, paint)
-        }
+        pointPaint.color = Color.BLACK
+        canvas.drawPoints(algo.points.filterNot { it.active }.map { it.p }.toPointsArray(), pointPaint)
+        pointPaint.color = Color.RED
+        canvas.drawPoints(algo.points.filter { it.active }.map { it.p }.toPointsArray(), pointPaint)
 
         canvas.drawText("Count: ${algo.points.size}", 10f, height - 10f, countPaint)
 

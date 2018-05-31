@@ -6,11 +6,10 @@ import android.graphics.Paint
 import io.github.pshegger.gamedevexperiments.GameSurfaceView
 import io.github.pshegger.gamedevexperiments.Scene
 import io.github.pshegger.gamedevexperiments.algorithms.MapGenerator
-import io.github.pshegger.gamedevexperiments.geometry.Edge
-import io.github.pshegger.gamedevexperiments.geometry.Vector
 import io.github.pshegger.gamedevexperiments.hud.Button
 import io.github.pshegger.gamedevexperiments.scenes.menu.MapGenerationMenuScene
 import io.github.pshegger.gamedevexperiments.utils.toLinesArray
+import io.github.pshegger.gamedevexperiments.utils.toPointsArray
 
 /**
  * @author pshegger@gmail.com
@@ -24,6 +23,8 @@ class MapGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
     private var btnInstant: Button? = null
 
     private val pointPaint = Paint().apply {
+        strokeCap = Paint.Cap.ROUND
+        strokeWidth = 10f
         isAntiAlias = true
     }
     private val delaunayEdgePaint = Paint().apply {
@@ -79,18 +80,17 @@ class MapGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
     }
 
     private fun renderPoisson(canvas: Canvas) {
-        generator.poissonPoints.forEach {
-            pointPaint.color = if (it.active) Color.RED else Color.BLACK
-            it.p.render(canvas, pointPaint)
-        }
+        pointPaint.color = Color.BLACK
+        canvas.drawPoints(generator.poissonPoints.filterNot { it.active }.map { it.p }.toPointsArray(), pointPaint)
+        pointPaint.color = Color.RED
+        canvas.drawPoints(generator.poissonPoints.filter { it.active }.map { it.p }.toPointsArray(), pointPaint)
     }
 
     private fun renderDelaunay(canvas: Canvas) {
         canvas.drawLines(generator.delaunayEdges.toLinesArray(), delaunayEdgePaint)
 
-        generator.delaunayPoints.forEach {
-            canvas.drawCircle(it.x, it.y, 5f, pointPaint)
-        }
+        pointPaint.color = Color.BLACK
+        canvas.drawPoints(generator.delaunayPoints.toPointsArray(), pointPaint)
     }
 
     private fun renderVoronoi(canvas: Canvas, drawDelaunayEdges: Boolean) {
@@ -100,17 +100,13 @@ class MapGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
 
         canvas.drawLines(generator.voronoiEdges.toLinesArray(), voronoiEdgePaint)
 
-        generator.voronoiPoints.forEach {
-            pointPaint.color = if (it.isActive) Color.RED else Color.BLACK
-            canvas.drawCircle(it.p.x, it.p.y, 5f, pointPaint)
-        }
+        pointPaint.color = Color.BLACK
+        canvas.drawPoints(generator.voronoiPoints.filterNot { it.isActive }.map { it.p }.toPointsArray(), pointPaint)
+        pointPaint.color = Color.RED
+        canvas.drawPoints(generator.voronoiPoints.filter { it.isActive }.map { it.p }.toPointsArray(), pointPaint)
     }
 
     override fun onBackPressed() {
         gameSurfaceView.scene = MapGenerationMenuScene(gameSurfaceView)
-    }
-
-    private fun Vector.render(canvas: Canvas, paint: Paint) {
-        canvas.drawCircle(x, y, 5f, paint)
     }
 }

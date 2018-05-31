@@ -10,6 +10,7 @@ import io.github.pshegger.gamedevexperiments.algorithms.PoissonBridson
 import io.github.pshegger.gamedevexperiments.hud.Button
 import io.github.pshegger.gamedevexperiments.scenes.menu.MapGenerationMenuScene
 import io.github.pshegger.gamedevexperiments.utils.toLinesArray
+import io.github.pshegger.gamedevexperiments.utils.toPointsArray
 
 /**
  * @author pshegger@gmail.com
@@ -20,6 +21,8 @@ class DelaunayBuildingScene(val gameSurfaceView: GameSurfaceView) : Scene {
     var height: Int = 0
 
     private val pointPaint = Paint().apply {
+        strokeCap = Paint.Cap.ROUND
+        strokeWidth = 10f
         isAntiAlias = true
     }
     private val edgePaint = Paint().apply {
@@ -71,10 +74,7 @@ class DelaunayBuildingScene(val gameSurfaceView: GameSurfaceView) : Scene {
         canvas.drawColor(Color.rgb(154, 206, 235))
 
         canvas.drawLines(generator.edges.toLinesArray(), edgePaint)
-
-        generator.points.forEach {
-            canvas.drawCircle(it.x, it.y, 5f, pointPaint)
-        }
+        canvas.drawPoints(generator.points.toPointsArray(), pointPaint)
 
         btnRestart?.render(canvas)
         btnInstant?.render(canvas)

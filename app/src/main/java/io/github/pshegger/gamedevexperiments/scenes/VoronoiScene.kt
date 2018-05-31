@@ -11,6 +11,8 @@ import io.github.pshegger.gamedevexperiments.algorithms.Voronoi
 import io.github.pshegger.gamedevexperiments.geometry.Edge
 import io.github.pshegger.gamedevexperiments.hud.Button
 import io.github.pshegger.gamedevexperiments.scenes.menu.MapGenerationMenuScene
+import io.github.pshegger.gamedevexperiments.utils.toLinesArray
+import io.github.pshegger.gamedevexperiments.utils.toPointsArray
 
 /**
  * @author pshegger@gmail.com
@@ -25,6 +27,8 @@ class VoronoiScene(val gameSurfaceView: GameSurfaceView) : Scene {
     var height: Int = 0
 
     private val pointPaint = Paint().apply {
+        strokeCap = Paint.Cap.ROUND
+        strokeWidth = 10f
         isAntiAlias = true
     }
     private val edgePaint = Paint().apply {
@@ -82,16 +86,12 @@ class VoronoiScene(val gameSurfaceView: GameSurfaceView) : Scene {
     override fun render(canvas: Canvas) {
         canvas.drawColor(Color.rgb(154, 206, 235))
 
-        generator.polygons.forEach { p ->
-            p.edges.forEach { e ->
-                e.render(canvas, edgePaint)
-            }
-        }
+        canvas.drawLines(generator.edges.toLinesArray(), edgePaint)
 
-        generator.points.forEach {
-            pointPaint.color = if (it.isActive) Color.RED else Color.BLACK
-            canvas.drawCircle(it.p.x, it.p.y, 5f, pointPaint)
-        }
+        pointPaint.color = Color.BLACK
+        canvas.drawPoints(generator.points.filterNot { it.isActive }.map { it.p }.toPointsArray(), pointPaint)
+        pointPaint.color = Color.RED
+        canvas.drawPoints(generator.points.filter { it.isActive }.map { it.p }.toPointsArray(), pointPaint)
 
         btnRestart?.render(canvas)
         btnInstant?.render(canvas)

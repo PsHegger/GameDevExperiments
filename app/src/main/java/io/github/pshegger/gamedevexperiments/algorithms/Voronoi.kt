@@ -15,6 +15,8 @@ class Voronoi(private val triangles: List<Triangle>) {
         get() = processingQueue.isNotEmpty()
     val polygons: List<Polygon>
         get() = _polygons.values.toList()
+    val edges: List<Edge>
+        get() = polygons.flatMap { it.edges }.distinct()
     val points: List<PointState>
         get() = _points.map { PointState(it, processingQueue.contains(it)) }
 

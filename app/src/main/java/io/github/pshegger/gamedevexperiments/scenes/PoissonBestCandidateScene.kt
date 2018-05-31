@@ -8,6 +8,7 @@ import io.github.pshegger.gamedevexperiments.Scene
 import io.github.pshegger.gamedevexperiments.algorithms.PoissonBestCandidate
 import io.github.pshegger.gamedevexperiments.hud.Button
 import io.github.pshegger.gamedevexperiments.scenes.menu.PoissonMenuScene
+import io.github.pshegger.gamedevexperiments.utils.toPointsArray
 
 /**
  * @author pshegger@gmail.com
@@ -17,8 +18,12 @@ class PoissonBestCandidateScene(val gameSurfaceView: GameSurfaceView) : Scene {
     var width: Int = 0
     var height: Int = 0
 
-    val pointPaint = Paint()
-    val statPaint = Paint().apply {
+    private val pointPaint = Paint().apply {
+        strokeCap = Paint.Cap.ROUND
+        strokeWidth = 10f
+        isAntiAlias = true
+    }
+    private val statPaint = Paint().apply {
         textSize = 42f
         isAntiAlias = true
         color = Color.GRAY
@@ -59,9 +64,7 @@ class PoissonBestCandidateScene(val gameSurfaceView: GameSurfaceView) : Scene {
     override fun render(canvas: Canvas) {
         canvas.drawColor(Color.rgb(154, 206, 235))
 
-        algo.points.forEach {
-            canvas.drawCircle(it.x, it.y, 5f, pointPaint)
-        }
+        canvas.drawPoints(algo.points.toPointsArray(), pointPaint)
 
         canvas.drawText("Count: ${algo.points.size}", 10f, height - 10f, statPaint)
 
