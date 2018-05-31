@@ -37,4 +37,12 @@ data class Triangle(val a: Vector, val b: Vector, val c: Vector) {
         c -> if (p2 == a) b else if (p2 == b) a else null
         else -> null
     }
+
+    fun shift(f: Float) = Triangle(
+            Vector(a.x + f, a.y + f),
+            Vector(b.x + f, b.y + f),
+            Vector(c.x + f, c.y + f)
+    )
+
+    fun shift(n: Int) = shift(n.toFloat())
 }

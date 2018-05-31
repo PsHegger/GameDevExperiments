@@ -17,6 +17,10 @@ import io.github.pshegger.gamedevexperiments.scenes.menu.MapGenerationMenuScene
  * @author pshegger@gmail.com
  */
 class VoronoiScene(val gameSurfaceView: GameSurfaceView) : Scene {
+    companion object {
+        const val POISSON_RADIUS = 80
+    }
+
     private var generator = Voronoi(emptyList())
     var width: Int = 0
     var height: Int = 0
@@ -53,15 +57,18 @@ class VoronoiScene(val gameSurfaceView: GameSurfaceView) : Scene {
     }
 
     private fun initGenerator() {
-        val poisson = PoissonBridson(margin = 5, radius = 80)
-        poisson.reset(width, height)
+        val scaledWidth = width + 2 * POISSON_RADIUS
+        val scaledHeight = height + 2 * POISSON_RADIUS
+
+        val poisson = PoissonBridson(margin = 5, radius = POISSON_RADIUS)
+        poisson.reset(scaledWidth, scaledHeight)
 
         poisson.generateAll()
         val delaunay = DelaunayGenerator(poisson.points.map { it.p })
-        delaunay.reset(width, height)
+        delaunay.reset(scaledWidth, scaledHeight)
         delaunay.generateAll()
 
-        generator = Voronoi(delaunay.triangles)
+        generator = Voronoi(delaunay.triangles.map { it.shift(-POISSON_RADIUS) })
         generator.reset()
     }
 
@@ -83,7 +90,7 @@ class VoronoiScene(val gameSurfaceView: GameSurfaceView) : Scene {
 
         generator.polygons.forEach { p ->
             p.edges.forEach { e ->
-                e.render(canvas)
+                e.render(canvas, edgePaint)
             }
         }
 
@@ -98,7 +105,7 @@ class VoronoiScene(val gameSurfaceView: GameSurfaceView) : Scene {
     private fun Triangle.render(canvas: Canvas, drawEdges: Boolean = false) {
         if (drawEdges) {
             edges.forEach {
-                canvas.drawLine(it.start.x, it.start.y, it.end.x, it.end.y, triangleEdgePaint)
+                it.render(canvas, triangleEdgePaint)
             }
         }
 
@@ -107,7 +114,7 @@ class VoronoiScene(val gameSurfaceView: GameSurfaceView) : Scene {
         }
     }
 
-    private fun Edge.render(canvas: Canvas) {
-        canvas.drawLine(start.x, start.y, end.x, end.y, edgePaint)
+    private fun Edge.render(canvas: Canvas, paint: Paint) {
+        canvas.drawLine(start.x, start.y, end.x, end.y, paint)
     }
 }
