@@ -9,7 +9,6 @@ import io.github.pshegger.gamedevexperiments.algorithms.DelaunayGenerator
 import io.github.pshegger.gamedevexperiments.algorithms.PoissonBridson
 import io.github.pshegger.gamedevexperiments.algorithms.Voronoi
 import io.github.pshegger.gamedevexperiments.geometry.Edge
-import io.github.pshegger.gamedevexperiments.geometry.Triangle
 import io.github.pshegger.gamedevexperiments.hud.Button
 import io.github.pshegger.gamedevexperiments.scenes.menu.MapGenerationMenuScene
 
@@ -84,14 +83,15 @@ class VoronoiScene(val gameSurfaceView: GameSurfaceView) : Scene {
     override fun render(canvas: Canvas) {
         canvas.drawColor(Color.rgb(154, 206, 235))
 
-        generator.triangles.forEach {
-            it.render(canvas)
-        }
-
         generator.polygons.forEach { p ->
             p.edges.forEach { e ->
                 e.render(canvas, edgePaint)
             }
+        }
+
+        generator.points.forEach {
+            pointPaint.color = if (it.isActive) Color.RED else Color.BLACK
+            canvas.drawCircle(it.p.x, it.p.y, 5f, pointPaint)
         }
 
         btnRestart?.render(canvas)
@@ -100,18 +100,6 @@ class VoronoiScene(val gameSurfaceView: GameSurfaceView) : Scene {
 
     override fun onBackPressed() {
         gameSurfaceView.scene = MapGenerationMenuScene(gameSurfaceView)
-    }
-
-    private fun Triangle.render(canvas: Canvas, drawEdges: Boolean = false) {
-        if (drawEdges) {
-            edges.forEach {
-                it.render(canvas, triangleEdgePaint)
-            }
-        }
-
-        points.forEach {
-            canvas.drawCircle(it.x, it.y, 5f, pointPaint)
-        }
     }
 
     private fun Edge.render(canvas: Canvas, paint: Paint) {

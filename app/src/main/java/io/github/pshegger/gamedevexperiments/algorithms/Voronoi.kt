@@ -10,20 +10,23 @@ import io.github.pshegger.gamedevexperiments.utils.random
 /**
  * @author pshegger@gmail.com
  */
-class Voronoi(val triangles: List<Triangle>) {
+class Voronoi(private val triangles: List<Triangle>) {
     val canGenerateMore: Boolean
         get() = processingQueue.isNotEmpty()
     val polygons: List<Polygon>
         get() = _polygons
+    val points: List<PointState>
+        get() = _points.map { PointState(it, processingQueue.contains(it)) }
 
     private val processedPoints = mutableListOf<Vector>()
     private val processingQueue = mutableListOf<Vector>()
     private val _polygons = mutableListOf<Polygon>()
+    private val _points = triangles.flatMap { listOf(it.a, it.b, it.c) }.distinct()
 
     fun reset() {
         processedPoints.clear()
         processingQueue.clear()
-        processingQueue.add(triangles.flatMap { listOf(it.a, it.b, it.c) }.distinct().random())
+        processingQueue.add(_points.random())
         _polygons.clear()
     }
 
@@ -58,4 +61,6 @@ class Voronoi(val triangles: List<Triangle>) {
             generateNextEdge()
         }
     }
+
+    data class PointState(val p: Vector, val isActive: Boolean)
 }
