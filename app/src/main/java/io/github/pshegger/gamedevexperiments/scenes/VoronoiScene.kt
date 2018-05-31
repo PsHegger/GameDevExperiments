@@ -29,10 +29,6 @@ class VoronoiScene(val gameSurfaceView: GameSurfaceView) : Scene {
         color = Color.BLUE
         strokeWidth = 5f
     }
-    private val triangleEdgePaint = Paint().apply {
-        color = Color.RED
-        strokeWidth = 2f
-    }
 
     private var btnRestart: Button? = null
     private var btnInstant: Button? = null
