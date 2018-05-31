@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.os.Build
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.SurfaceHolder
@@ -87,7 +88,11 @@ class GameSurfaceView(context: Context, attrs: AttributeSet?, defStyleAttr: Int,
                 }
 
                 update(deltaTime)
-                val canvas = gameSurfaceView.holder.lockCanvas() ?: continue
+                val canvas = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    gameSurfaceView.holder.lockHardwareCanvas()
+                } else {
+                    gameSurfaceView.holder.lockCanvas()
+                } ?: continue
                 render(canvas)
                 gameSurfaceView.holder.unlockCanvasAndPost(canvas)
 
