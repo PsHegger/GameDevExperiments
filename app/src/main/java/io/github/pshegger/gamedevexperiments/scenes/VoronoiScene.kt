@@ -8,6 +8,7 @@ import io.github.pshegger.gamedevexperiments.Scene
 import io.github.pshegger.gamedevexperiments.algorithms.DelaunayGenerator
 import io.github.pshegger.gamedevexperiments.algorithms.PoissonBridson
 import io.github.pshegger.gamedevexperiments.algorithms.Voronoi
+import io.github.pshegger.gamedevexperiments.geometry.Edge
 import io.github.pshegger.gamedevexperiments.geometry.Triangle
 import io.github.pshegger.gamedevexperiments.hud.Button
 import io.github.pshegger.gamedevexperiments.scenes.menu.MapGenerationMenuScene
@@ -24,6 +25,10 @@ class VoronoiScene(val gameSurfaceView: GameSurfaceView) : Scene {
     private val edgePaint = Paint().apply {
         color = Color.BLUE
         strokeWidth = 5f
+    }
+    private val triangleEdgePaint = Paint().apply {
+        color = Color.RED
+        strokeWidth = 2f
     }
 
     private var btnRestart: Button? = null
@@ -57,6 +62,7 @@ class VoronoiScene(val gameSurfaceView: GameSurfaceView) : Scene {
         delaunay.generateAll()
 
         generator = Voronoi(delaunay.triangles)
+        generator.reset()
     }
 
     override fun update(deltaTime: Long) {
@@ -75,6 +81,12 @@ class VoronoiScene(val gameSurfaceView: GameSurfaceView) : Scene {
             it.render(canvas)
         }
 
+        generator.polygons.forEach { p ->
+            p.edges.forEach { e ->
+                e.render(canvas)
+            }
+        }
+
         btnRestart?.render(canvas)
         btnInstant?.render(canvas)
     }
@@ -84,14 +96,18 @@ class VoronoiScene(val gameSurfaceView: GameSurfaceView) : Scene {
     }
 
     private fun Triangle.render(canvas: Canvas, drawEdges: Boolean = false) {
-        canvas.drawCircle(a.x, a.y, 5f, pointPaint)
-        canvas.drawCircle(b.x, b.y, 5f, pointPaint)
-        canvas.drawCircle(c.x, c.y, 5f, pointPaint)
-
         if (drawEdges) {
             edges.forEach {
-                canvas.drawLine(it.start.x, it.start.y, it.end.x, it.end.y, edgePaint)
+                canvas.drawLine(it.start.x, it.start.y, it.end.x, it.end.y, triangleEdgePaint)
             }
         }
+
+        points.forEach {
+            canvas.drawCircle(it.x, it.y, 5f, pointPaint)
+        }
+    }
+
+    private fun Edge.render(canvas: Canvas) {
+        canvas.drawLine(start.x, start.y, end.x, end.y, edgePaint)
     }
 }

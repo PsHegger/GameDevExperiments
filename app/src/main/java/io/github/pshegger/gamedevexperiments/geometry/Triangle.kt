@@ -10,6 +10,8 @@ data class Triangle(val a: Vector, val b: Vector, val c: Vector) {
             Edge(b, c)
     )
 
+    val points: List<Vector> = listOf(a, b, c)
+
     val circumscribedCircleCenter: Vector by lazy {
         val l1 = Line.perpendicularBiselector(edges[0])
         val l2 = Line.perpendicularBiselector(edges[1])
