@@ -19,4 +19,7 @@ data class Vector(val x: Float, val y: Float) {
     operator fun div(d: Float): Vector = Vector(x / d, y / d)
     operator fun times(r: Float): Vector = Vector(x * r, y * r)
     operator fun times(v: Vector): Float = x * v.x + y * v.y            // Dot product
+
+    fun shift(f: Float) = Vector(x + f, y + f)
+    fun shift(n: Int) = shift(n.toFloat())
 }

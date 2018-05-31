@@ -10,7 +10,7 @@ import io.github.pshegger.gamedevexperiments.utils.*
  */
 class DelaunayGenerator(val points: List<Vector>) {
     val edges: List<Edge>
-        get() = _triangles.flatMap { it.edges }
+        get() = _triangles.flatMap { it.edges }.distinct()
     val canGenerateMore: Boolean
         get() = unprocessedPoints.isNotEmpty() || containsHelperTriangle()
     val triangles: List<Triangle>
@@ -31,9 +31,9 @@ class DelaunayGenerator(val points: List<Vector>) {
 
         _triangles.clear()
         _triangles.add(Triangle(
-                Vector(-10f, -10f),
-                Vector(-10f, m),
-                Vector(m, -10f)
+                Vector(-100f, -100f),
+                Vector(-100f, m),
+                Vector(m, -100f)
         ))
 
         unprocessedPoints.clear()
