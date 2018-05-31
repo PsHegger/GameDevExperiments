@@ -24,10 +24,13 @@ class VoronoiScene(val gameSurfaceView: GameSurfaceView) : Scene {
     var width: Int = 0
     var height: Int = 0
 
-    private val pointPaint = Paint()
+    private val pointPaint = Paint().apply {
+        isAntiAlias = true
+    }
     private val edgePaint = Paint().apply {
         color = Color.BLUE
         strokeWidth = 5f
+        isAntiAlias = true
     }
 
     private var btnRestart: Button? = null
