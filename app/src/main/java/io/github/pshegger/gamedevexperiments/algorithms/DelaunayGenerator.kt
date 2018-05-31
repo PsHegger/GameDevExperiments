@@ -1,6 +1,5 @@
 package io.github.pshegger.gamedevexperiments.algorithms
 
-import android.util.Log
 import io.github.pshegger.gamedevexperiments.geometry.Edge
 import io.github.pshegger.gamedevexperiments.geometry.Triangle
 import io.github.pshegger.gamedevexperiments.geometry.Vector
@@ -11,13 +10,15 @@ import io.github.pshegger.gamedevexperiments.utils.*
  */
 class DelaunayGenerator(val points: List<Vector>) {
     val edges: List<Edge>
-        get() = triangles.flatMap { it.edges }
+        get() = _triangles.flatMap { it.edges }
     val canGenerateMore: Boolean
         get() = unprocessedPoints.isNotEmpty() || containsHelperTriangle()
+    val triangles: List<Triangle>
+        get() = _triangles
 
     private val unprocessedPoints = arrayListOf<Vector>().apply { addAll(points) }
 
-    private val triangles = arrayListOf<Triangle>()
+    private val _triangles = arrayListOf<Triangle>()
     private val badEdges = mutableSetOf<Edge>()
 
     private var width: Int = 0
@@ -28,8 +29,8 @@ class DelaunayGenerator(val points: List<Vector>) {
         this.height = height
         val m = 2.5f * Math.max(width, height)
 
-        triangles.clear()
-        triangles.add(Triangle(
+        _triangles.clear()
+        _triangles.add(Triangle(
                 Vector(-10f, -10f),
                 Vector(-10f, m),
                 Vector(m, -10f)
@@ -43,7 +44,7 @@ class DelaunayGenerator(val points: List<Vector>) {
         while (badEdges.isNotEmpty()) {
             val edge = badEdges.first()
             badEdges.remove(edge)
-            val ts = triangles.filter { t -> t.edges.any { e -> e == edge } }
+            val ts = _triangles.filter { t -> t.edges.any { e -> e == edge } }
 
             if (ts.size == 2) {
                 val t1 = ts[0]
@@ -58,20 +59,20 @@ class DelaunayGenerator(val points: List<Vector>) {
         }
 
         if (unprocessedPoints.isEmpty()) {
-            val finalTriangles = triangles.filterNot { it.isHelper(width, height) }
-            triangles.clear()
-            triangles.addAll(finalTriangles)
+            val finalTriangles = _triangles.filterNot { it.isHelper(width, height) }
+            _triangles.clear()
+            _triangles.addAll(finalTriangles)
             return
         }
 
         val p = unprocessedPoints.random()
         unprocessedPoints.remove(p)
-        val container = triangles.first { it.contains(p) }
+        val container = _triangles.first { it.contains(p) }
 
-        triangles.remove(container)
-        triangles.add(Triangle(container.a, container.b, p))
-        triangles.add(Triangle(container.a, container.c, p))
-        triangles.add(Triangle(container.b, container.c, p))
+        _triangles.remove(container)
+        _triangles.add(Triangle(container.a, container.b, p))
+        _triangles.add(Triangle(container.a, container.c, p))
+        _triangles.add(Triangle(container.b, container.c, p))
 
         badEdges.addAll(container.edges)
     }
@@ -85,16 +86,16 @@ class DelaunayGenerator(val points: List<Vector>) {
     private fun makeFlip(p: Pair<Triangle, Triangle>) {
         val t1 = p.first
         val t2 = p.second
-        triangles.remove(t1)
-        triangles.remove(t2)
+        _triangles.remove(t1)
+        _triangles.remove(t2)
 
         val commonEdge = t1.commonEdge(t2)
         if (commonEdge != null) {
             val o1 = t1.thirdPoint(commonEdge.start, commonEdge.end)
             val o2 = t2.thirdPoint(commonEdge.start, commonEdge.end)
             if (o1 != null && o2 != null) {
-                triangles.add(Triangle(o1, commonEdge.start, o2))
-                triangles.add(Triangle(o2, commonEdge.end, o1))
+                _triangles.add(Triangle(o1, commonEdge.start, o2))
+                _triangles.add(Triangle(o2, commonEdge.end, o1))
 
                 badEdges.add(Edge(o1, commonEdge.start))
                 badEdges.add(Edge(o2, commonEdge.start))
@@ -104,7 +105,7 @@ class DelaunayGenerator(val points: List<Vector>) {
         }
     }
 
-    private fun containsHelperTriangle() = triangles.any { it.isHelper(width, height) }
+    private fun containsHelperTriangle() = _triangles.any { it.isHelper(width, height) }
     private fun Triangle.isHelper(width: Int, height: Int) = isPointHelper(a, width, height) || isPointHelper(b, width, height) || isPointHelper(c, width, height)
     private fun isPointHelper(v: Vector, width: Int, height: Int) = v.x < 0 || v.x > width || v.y < 0 || v.y > height
 }
