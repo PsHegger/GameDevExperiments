@@ -3,9 +3,11 @@ package io.github.pshegger.gamedevexperiments.scenes
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Path
 import io.github.pshegger.gamedevexperiments.GameSurfaceView
 import io.github.pshegger.gamedevexperiments.Scene
 import io.github.pshegger.gamedevexperiments.algorithms.MapGenerator
+import io.github.pshegger.gamedevexperiments.geometry.Polygon
 import io.github.pshegger.gamedevexperiments.hud.Button
 import io.github.pshegger.gamedevexperiments.scenes.menu.MapGenerationMenuScene
 import io.github.pshegger.gamedevexperiments.utils.timeLimitedWhile
@@ -37,6 +39,14 @@ class MapGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
         color = Color.BLUE
         strokeWidth = 5f
         isAntiAlias = true
+    }
+    private val voronoiEdgePaintThin = Paint().apply {
+        color = Color.BLUE
+        strokeWidth = 1f
+        isAntiAlias = true
+    }
+    private val cellPaint = Paint().apply {
+        style = Paint.Style.FILL
     }
 
     override fun sizeChanged(width: Int, height: Int) {
@@ -74,8 +84,9 @@ class MapGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
         when (generator.state) {
             MapGenerator.State.Poisson -> renderPoisson(canvas)
             MapGenerator.State.Delaunay -> renderDelaunay(canvas)
-            MapGenerator.State.Voronoi -> renderVoronoi(canvas, true)
-            MapGenerator.State.Finished -> renderVoronoi(canvas, false)
+            MapGenerator.State.Voronoi -> renderVoronoi(canvas)
+            MapGenerator.State.Simplex -> renderSimplex(canvas)
+            MapGenerator.State.Finished -> renderSimplex(canvas)
         }
 
         btnRestart?.render(canvas)
@@ -96,10 +107,8 @@ class MapGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
         canvas.drawPoints(generator.delaunayPoints.toPointsArray(), pointPaint)
     }
 
-    private fun renderVoronoi(canvas: Canvas, drawDelaunayEdges: Boolean) {
-        if (drawDelaunayEdges) {
-            canvas.drawLines(generator.delaunayEdges.toLinesArray(), delaunayEdgePaint)
-        }
+    private fun renderVoronoi(canvas: Canvas) {
+        canvas.drawLines(generator.delaunayEdges.toLinesArray(), delaunayEdgePaint)
 
         canvas.drawLines(generator.voronoiEdges.toLinesArray(), voronoiEdgePaint)
 
@@ -109,7 +118,29 @@ class MapGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
         canvas.drawPoints(generator.voronoiPoints.filter { it.isActive }.map { it.p }.toPointsArray(), pointPaint)
     }
 
+    private fun renderSimplex(canvas: Canvas) {
+        generator.mapPolygons.forEach { mp ->
+            mp.polygon.toPath()?.let { path ->
+                cellPaint.color = Color.rgb(mp.value, mp.value, mp.value)
+                canvas.drawPath(path, cellPaint)
+            }
+        }
+
+        canvas.drawLines(generator.voronoiEdges.toLinesArray(), voronoiEdgePaintThin)
+    }
+
     override fun onBackPressed() {
         gameSurfaceView.scene = MapGenerationMenuScene(gameSurfaceView)
+    }
+
+    private fun Polygon.toPath(): Path? = Path().let { p ->
+        vectorRoute?.let { route ->
+            p.moveTo(route[0].x, route[0].y)
+            (1 until route.size).forEach { i ->
+                p.lineTo(route[i].x, route[i].y)
+            }
+        } ?: return@let null
+
+        p
     }
 }
