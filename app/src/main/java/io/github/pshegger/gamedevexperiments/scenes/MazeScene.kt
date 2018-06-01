@@ -12,7 +12,7 @@ import io.github.pshegger.gamedevexperiments.scenes.menu.MazeMenuScene
 /**
  * @author pshegger@gmail.com
  */
-class MazeScene(val gameSurfaceView: GameSurfaceView, val generator: BaseMazeGenerator) : Scene {
+class MazeScene(val gameSurfaceView: GameSurfaceView, private val generator: BaseMazeGenerator) : Scene {
     private val cellSize = 20
     private val margin = 10
 
