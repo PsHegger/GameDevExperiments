@@ -31,7 +31,7 @@ class SimplexNoiseGenerator {
         _bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         canvas = Canvas(_bmp)
         pos = 0
-        simplex = SimplexNoise(100, 0.1, Random().nextInt())
+        simplex = SimplexNoise(100, 0.5, Random().nextInt())
     }
 
     fun generateNextPoint() {
