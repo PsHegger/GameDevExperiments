@@ -8,6 +8,7 @@ import io.github.pshegger.gamedevexperiments.Scene
 import io.github.pshegger.gamedevexperiments.algorithms.MapGenerator
 import io.github.pshegger.gamedevexperiments.hud.Button
 import io.github.pshegger.gamedevexperiments.scenes.menu.MapGenerationMenuScene
+import io.github.pshegger.gamedevexperiments.utils.timeLimitedWhile
 import io.github.pshegger.gamedevexperiments.utils.toLinesArray
 import io.github.pshegger.gamedevexperiments.utils.toPointsArray
 
@@ -58,7 +59,9 @@ class MapGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
 
     override fun update(deltaTime: Long) {
         if (generator.canGenerateMore) {
-            generator.generateNext()
+            timeLimitedWhile(5L, { generator.canGenerateMore }) {
+                generator.generateNext()
+            }
         }
 
         btnRestart?.update(deltaTime, gameSurfaceView.touch)

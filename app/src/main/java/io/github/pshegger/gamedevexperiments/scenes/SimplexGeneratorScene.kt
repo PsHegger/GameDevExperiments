@@ -9,6 +9,7 @@ import io.github.pshegger.gamedevexperiments.Scene
 import io.github.pshegger.gamedevexperiments.algorithms.simplex.SimplexNoiseGenerator
 import io.github.pshegger.gamedevexperiments.hud.Button
 import io.github.pshegger.gamedevexperiments.scenes.menu.MapGenerationMenuScene
+import io.github.pshegger.gamedevexperiments.utils.timeLimitedWhile
 
 /**
  * @author pshegger@gmail.com
@@ -43,8 +44,7 @@ class SimplexGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
 
     override fun update(deltaTime: Long) {
         if (generator.canGenerateMore) {
-            val start = System.nanoTime()
-            while (System.nanoTime() - start < 15000000 && generator.canGenerateMore) {
+            timeLimitedWhile(15L, {generator.canGenerateMore}) {
                 generator.generateNextPoint()
             }
         }

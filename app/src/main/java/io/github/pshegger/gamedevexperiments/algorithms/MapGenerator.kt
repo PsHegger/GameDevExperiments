@@ -38,7 +38,7 @@ class MapGenerator {
         this.width = width
         this.height = height
 
-        poissonGenerator = PoissonBridson(margin = 5, radius = 80)
+        poissonGenerator = PoissonBridson(margin = 5, radius = 40)
         poissonGenerator.reset(this.width, this.height)
         _state = State.Poisson
     }
