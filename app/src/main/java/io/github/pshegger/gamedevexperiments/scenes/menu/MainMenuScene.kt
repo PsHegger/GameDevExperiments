@@ -20,6 +20,7 @@ class MainMenuScene(gameSurfaceView: GameSurfaceView) : BaseMenuScene(gameSurfac
                 MenuItem("Balls", BallsMenuScene(gameSurfaceView)),
                 MenuItem("Poisson", PoissonMenuScene(gameSurfaceView)),
                 MenuItem("Maze", MazeMenuScene(gameSurfaceView)),
-                MenuItem("Map Generation", MapGenerationMenuScene(gameSurfaceView))
+                MenuItem("Map Generation", MapGenerationMenuScene(gameSurfaceView)),
+                MenuItem("Dungeon Generation", DungeonGeneratorScene(gameSurfaceView))
         )
 }
