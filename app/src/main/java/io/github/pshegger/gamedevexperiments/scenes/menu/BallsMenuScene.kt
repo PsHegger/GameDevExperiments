@@ -1,8 +1,8 @@
 package io.github.pshegger.gamedevexperiments.scenes.menu
 
 import io.github.pshegger.gamedevexperiments.GameSurfaceView
-import io.github.pshegger.gamedevexperiments.scenes.BouncingBallsScene
-import io.github.pshegger.gamedevexperiments.scenes.SimpleBallsScene
+import io.github.pshegger.gamedevexperiments.scenes.balls.BouncingBallsScene
+import io.github.pshegger.gamedevexperiments.scenes.balls.SimpleBallsScene
 
 /**
  * @author pshegger@gmail.com

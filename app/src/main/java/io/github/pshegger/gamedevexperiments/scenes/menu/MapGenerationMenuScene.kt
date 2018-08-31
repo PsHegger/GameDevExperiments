@@ -1,7 +1,10 @@
 package io.github.pshegger.gamedevexperiments.scenes.menu
 
 import io.github.pshegger.gamedevexperiments.GameSurfaceView
-import io.github.pshegger.gamedevexperiments.scenes.*
+import io.github.pshegger.gamedevexperiments.scenes.map.DelaunayBuildingScene
+import io.github.pshegger.gamedevexperiments.scenes.map.MapGeneratorScene
+import io.github.pshegger.gamedevexperiments.scenes.map.SimplexGeneratorScene
+import io.github.pshegger.gamedevexperiments.scenes.map.VoronoiScene
 
 /**
  * @author pshegger@gmail.com

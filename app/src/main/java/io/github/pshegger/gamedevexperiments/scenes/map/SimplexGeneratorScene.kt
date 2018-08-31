@@ -1,6 +1,5 @@
-package io.github.pshegger.gamedevexperiments.scenes
+package io.github.pshegger.gamedevexperiments.scenes.map
 
-import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint

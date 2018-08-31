@@ -3,8 +3,8 @@ package io.github.pshegger.gamedevexperiments.scenes.menu
 import io.github.pshegger.gamedevexperiments.GameSurfaceView
 import io.github.pshegger.gamedevexperiments.algorithms.maze.RandomDepthFirstGenerator
 import io.github.pshegger.gamedevexperiments.algorithms.maze.RandomTraversalGenerator
-import io.github.pshegger.gamedevexperiments.scenes.MazeScene
-import io.github.pshegger.gamedevexperiments.scenes.PathFindingScene
+import io.github.pshegger.gamedevexperiments.scenes.maze.MazeScene
+import io.github.pshegger.gamedevexperiments.scenes.maze.PathFindingScene
 
 /**
  * @author pshegger@gmail.com

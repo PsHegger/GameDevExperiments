@@ -1,22 +1,20 @@
-package io.github.pshegger.gamedevexperiments.scenes
+package io.github.pshegger.gamedevexperiments.scenes.poisson
 
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import io.github.pshegger.gamedevexperiments.GameSurfaceView
 import io.github.pshegger.gamedevexperiments.Scene
-import io.github.pshegger.gamedevexperiments.algorithms.DelaunayGenerator
 import io.github.pshegger.gamedevexperiments.algorithms.PoissonBridson
 import io.github.pshegger.gamedevexperiments.hud.Button
-import io.github.pshegger.gamedevexperiments.scenes.menu.MapGenerationMenuScene
-import io.github.pshegger.gamedevexperiments.utils.toLinesArray
+import io.github.pshegger.gamedevexperiments.scenes.menu.PoissonMenuScene
 import io.github.pshegger.gamedevexperiments.utils.toPointsArray
 
 /**
  * @author pshegger@gmail.com
  */
-class DelaunayBuildingScene(val gameSurfaceView: GameSurfaceView) : Scene {
-    private var generator = DelaunayGenerator(emptyList())
+class PoissonBridsonScene(val gameSurfaceView: GameSurfaceView) : Scene {
+    val algo = PoissonBridson(margin = 5, radius = 45)
     var width: Int = 0
     var height: Int = 0
 
@@ -25,45 +23,36 @@ class DelaunayBuildingScene(val gameSurfaceView: GameSurfaceView) : Scene {
         strokeWidth = 10f
         isAntiAlias = true
     }
-    private val edgePaint = Paint().apply {
-        color = Color.BLUE
-        strokeWidth = 5f
+    private val countPaint = Paint().apply {
+        textSize = 42f
         isAntiAlias = true
+        color = Color.GRAY
     }
 
-    private var btnRestart: Button? = null
-    private var btnInstant: Button? = null
+    var btnRestart: Button? = null
+    var btnInstant: Button? = null
 
     override fun sizeChanged(width: Int, height: Int) {
         this.width = width
         this.height = height
 
         btnRestart = Button("RES", width - 200f, height - 120f, width - 40f, height - 40f, Color.TRANSPARENT, Color.GRAY, Color.BLACK, 50f).apply {
-            onClick = { initGenerator() }
+            onClick = { algo.reset(width, height) }
         }
 
         btnInstant = Button("INS", width - 400f, height - 120f, width - 240f, height - 40f, Color.TRANSPARENT, Color.GRAY, Color.BLACK, 50f).apply {
             onClick = {
-                initGenerator()
-                generator.generateAll()
+                algo.reset(width, height)
+                algo.generateAll()
             }
         }
 
-        initGenerator()
-    }
-
-    private fun initGenerator() {
-        val poisson = PoissonBridson(margin = 5, radius = 80)
-        poisson.reset(width, height)
-
-        poisson.generateAll()
-        generator = DelaunayGenerator(poisson.points.map { it.p })
-        generator.reset(width, height)
+        algo.reset(width, height)
     }
 
     override fun update(deltaTime: Long) {
-        if (generator.canGenerateMore) {
-            generator.generateNextEdge()
+        if (algo.canGenerateMore) {
+            algo.generateNextPoint()
         }
 
         btnRestart?.update(deltaTime, gameSurfaceView.touch)
@@ -73,14 +62,18 @@ class DelaunayBuildingScene(val gameSurfaceView: GameSurfaceView) : Scene {
     override fun render(canvas: Canvas) {
         canvas.drawColor(Color.rgb(154, 206, 235))
 
-        canvas.drawLines(generator.edges.toLinesArray(), edgePaint)
-        canvas.drawPoints(generator.points.toPointsArray(), pointPaint)
+        pointPaint.color = Color.BLACK
+        canvas.drawPoints(algo.points.filterNot { it.active }.map { it.p }.toPointsArray(), pointPaint)
+        pointPaint.color = Color.RED
+        canvas.drawPoints(algo.points.filter { it.active }.map { it.p }.toPointsArray(), pointPaint)
+
+        canvas.drawText("Count: ${algo.points.size}", 10f, height - 10f, countPaint)
 
         btnRestart?.render(canvas)
         btnInstant?.render(canvas)
     }
 
     override fun onBackPressed() {
-        gameSurfaceView.scene = MapGenerationMenuScene(gameSurfaceView)
+        gameSurfaceView.scene = PoissonMenuScene(gameSurfaceView)
     }
 }

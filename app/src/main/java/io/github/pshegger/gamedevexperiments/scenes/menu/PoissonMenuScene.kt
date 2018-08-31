@@ -1,8 +1,8 @@
 package io.github.pshegger.gamedevexperiments.scenes.menu
 
 import io.github.pshegger.gamedevexperiments.GameSurfaceView
-import io.github.pshegger.gamedevexperiments.scenes.PoissonBestCandidateScene
-import io.github.pshegger.gamedevexperiments.scenes.PoissonBridsonScene
+import io.github.pshegger.gamedevexperiments.scenes.poisson.PoissonBestCandidateScene
+import io.github.pshegger.gamedevexperiments.scenes.poisson.PoissonBridsonScene
 
 /**
  * @author pshegger@gmail.com

@@ -1,4 +1,4 @@
-package io.github.pshegger.gamedevexperiments.scenes
+package io.github.pshegger.gamedevexperiments.scenes.map
 
 import android.graphics.Canvas
 import android.graphics.Color
