@@ -15,7 +15,7 @@ class DungeonGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
         private const val SCALE_FACTOR = 20
     }
 
-    private val generator = DungeonGenerator(DungeonGenerator.Settings(0.8f, 2, 15))
+    private val generator = DungeonGenerator(DungeonGenerator.Settings(0.5f, 3, 10, 0.5f))
     private val paint = Paint().apply {
         strokeWidth = 1f
         isAntiAlias = true
@@ -61,8 +61,14 @@ class DungeonGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
     override fun render(canvas: Canvas) {
         canvas.drawColor(Color.rgb(154, 206, 235))
 
-        generator.rooms.forEach { room ->
-            canvas.drawRect(room.getRect(), paint)
+        generator.rooms.forEach { roomState ->
+            paint.color = when (roomState.state) {
+                DungeonGenerator.RoomState.State.Generated -> Color.DKGRAY
+                DungeonGenerator.RoomState.State.Placed -> Color.BLUE
+                DungeonGenerator.RoomState.State.Selected -> Color.RED
+            }
+
+            canvas.drawRect(roomState.room.getRect(), paint)
         }
 
         canvas.drawText("Count: ${generator.rooms.size}", 10f, height - 10f, textPaint)
