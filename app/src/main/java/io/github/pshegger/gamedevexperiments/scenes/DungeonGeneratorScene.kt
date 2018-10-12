@@ -1,11 +1,15 @@
 package io.github.pshegger.gamedevexperiments.scenes
 
 import android.graphics.*
+import android.util.Log
 import io.github.pshegger.gamedevexperiments.GameSurfaceView
 import io.github.pshegger.gamedevexperiments.Scene
 import io.github.pshegger.gamedevexperiments.algorithms.DungeonGenerator
 import io.github.pshegger.gamedevexperiments.hud.Button
 import io.github.pshegger.gamedevexperiments.scenes.menu.MainMenuScene
+import kotlin.math.absoluteValue
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  * @author pshegger@gmail.com
@@ -13,6 +17,7 @@ import io.github.pshegger.gamedevexperiments.scenes.menu.MainMenuScene
 class DungeonGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
     companion object {
         private const val SCALE_FACTOR = 20
+        private const val SCREEN_MARGIN = 20
     }
 
     private val generator = DungeonGenerator(DungeonGenerator.Settings(0.5f, 3, 10, 0.5f))
@@ -65,6 +70,8 @@ class DungeonGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
     override fun render(canvas: Canvas) {
         canvas.drawColor(Color.rgb(154, 206, 235))
 
+        val scaleFactor = calculateScale()
+
         generator.rooms.forEach { roomState ->
             paint.color = when (roomState.state) {
                 DungeonGenerator.RoomState.State.Generated -> Color.DKGRAY
@@ -72,7 +79,7 @@ class DungeonGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
                 DungeonGenerator.RoomState.State.Selected -> Color.RED
             }
 
-            canvas.drawRect(roomState.room.getRect(), paint)
+            canvas.drawRect(roomState.room.getRect(scaleFactor), paint)
         }
 
         canvas.drawText("Count: ${generator.rooms.size}", 10f, height - 10f, textPaint)
@@ -85,9 +92,31 @@ class DungeonGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
         gameSurfaceView.scene = MainMenuScene(gameSurfaceView)
     }
 
-    private fun DungeonGenerator.Room.getRect(): RectF {
-        val scaleFactor = SCALE_FACTOR
+    private fun calculateScale(): Float {
+        val distances = generator.rooms.map { room ->
+            val left = room.room.topLeft.x - scaledWidth / 2f
+            val top = room.room.topLeft.y - scaledHeight / 2f
 
+            Pair(
+                    Pair(left.absoluteValue, (left + room.room.width).absoluteValue),
+                    Pair(top.absoluteValue, (top + room.room.height).absoluteValue)
+            )
+        }
+        val horizontalScale = distances.flatMap { d ->
+            listOf(d.first.first, d.first.second)
+        }.max()?.let {
+            (width - 2 * SCREEN_MARGIN) / (it * 2)
+        } ?: SCALE_FACTOR.toFloat()
+        val verticalScale = distances.flatMap { d ->
+            listOf(d.second.first, d.second.second)
+        }.max()?.let {
+            (height - 2 * SCREEN_MARGIN) / (it * 2)
+        } ?: SCALE_FACTOR.toFloat()
+
+        return listOf(verticalScale, horizontalScale, SCALE_FACTOR.toFloat()).min()!!
+    }
+
+    private fun DungeonGenerator.Room.getRect(scaleFactor: Float): RectF {
         val left = (topLeft.x - scaledWidth / 2f) * scaleFactor + this@DungeonGeneratorScene.width / 2f
         val top = (topLeft.y - scaledHeight / 2f) * scaleFactor + this@DungeonGeneratorScene.height / 2f
         val right = left + width * scaleFactor
