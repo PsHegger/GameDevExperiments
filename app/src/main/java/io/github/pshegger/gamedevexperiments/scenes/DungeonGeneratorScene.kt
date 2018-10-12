@@ -7,9 +7,6 @@ import io.github.pshegger.gamedevexperiments.Scene
 import io.github.pshegger.gamedevexperiments.algorithms.DungeonGenerator
 import io.github.pshegger.gamedevexperiments.hud.Button
 import io.github.pshegger.gamedevexperiments.scenes.menu.MainMenuScene
-import kotlin.math.absoluteValue
-import kotlin.math.max
-import kotlin.math.min
 
 /**
  * @author pshegger@gmail.com
@@ -92,36 +89,46 @@ class DungeonGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
         gameSurfaceView.scene = MainMenuScene(gameSurfaceView)
     }
 
-    private fun calculateScale(): Float {
-        val distances = generator.rooms.map { room ->
-            val left = room.room.topLeft.x - scaledWidth / 2f
-            val top = room.room.topLeft.y - scaledHeight / 2f
+    private fun calculateScale(): ZoomInfo {
+        val minLeft = generator.rooms.asSequence().map { it.room.topLeft.x }.min() ?: 0f
+        val maxRight = generator.rooms.asSequence().map { it.room.topLeft.x + it.room.width }.max() ?: 0f
+        val minTop = generator.rooms.asSequence().map { it.room.topLeft.y }.min() ?: 0f
+        val maxBottom = generator.rooms.asSequence().map { it.room.topLeft.y + it.room.height }.max() ?: 0f
 
-            Pair(
-                    Pair(left.absoluteValue, (left + room.room.width).absoluteValue),
-                    Pair(top.absoluteValue, (top + room.room.height).absoluteValue)
-            )
+        val maxWidth = maxRight - minLeft
+        val maxHeight = maxBottom - minTop
+
+        val horizontalScale = (width - 2 * SCREEN_MARGIN) / maxWidth
+        val verticalScale = (height - 2 * SCREEN_MARGIN) / maxHeight
+        val scale = listOf(verticalScale, horizontalScale, SCALE_FACTOR.toFloat()).min()!!
+
+        val leftPos = (minLeft - scaledWidth / 2) * scale + width / 2f
+        val rightPos = (maxRight - scaledWidth / 2) * scale + width / 2f
+        val topPos = (minTop - scaledHeight / 2) * scale + height / 2f
+        val bottomPos = (maxBottom - scaledHeight / 2) * scale + height / 2f
+
+        val translateX = when {
+            leftPos < SCREEN_MARGIN -> SCREEN_MARGIN - leftPos
+            rightPos > width - SCREEN_MARGIN -> (width - SCREEN_MARGIN) - rightPos
+            else -> 0f
         }
-        val horizontalScale = distances.flatMap { d ->
-            listOf(d.first.first, d.first.second)
-        }.max()?.let {
-            (width - 2 * SCREEN_MARGIN) / (it * 2)
-        } ?: SCALE_FACTOR.toFloat()
-        val verticalScale = distances.flatMap { d ->
-            listOf(d.second.first, d.second.second)
-        }.max()?.let {
-            (height - 2 * SCREEN_MARGIN) / (it * 2)
-        } ?: SCALE_FACTOR.toFloat()
+        val translateY = when {
+            topPos < SCREEN_MARGIN -> SCREEN_MARGIN - topPos
+            bottomPos > height - SCREEN_MARGIN -> (height - SCREEN_MARGIN) - bottomPos
+            else -> 0f
+        }
 
-        return listOf(verticalScale, horizontalScale, SCALE_FACTOR.toFloat()).min()!!
+        return ZoomInfo(scale, translateX, translateY)
     }
 
-    private fun DungeonGenerator.Room.getRect(scaleFactor: Float): RectF {
-        val left = (topLeft.x - scaledWidth / 2f) * scaleFactor + this@DungeonGeneratorScene.width / 2f
-        val top = (topLeft.y - scaledHeight / 2f) * scaleFactor + this@DungeonGeneratorScene.height / 2f
-        val right = left + width * scaleFactor
-        val bottom = top + height * scaleFactor
+    private fun DungeonGenerator.Room.getRect(zoomInfo: ZoomInfo): RectF {
+        val left = (topLeft.x - scaledWidth / 2f) * zoomInfo.scaleFactor + this@DungeonGeneratorScene.width / 2f + zoomInfo.translateX
+        val top = (topLeft.y - scaledHeight / 2f) * zoomInfo.scaleFactor + this@DungeonGeneratorScene.height / 2f + zoomInfo.translateY
+        val right = left + width * zoomInfo.scaleFactor
+        val bottom = top + height * zoomInfo.scaleFactor
 
         return RectF(left, top, right, bottom)
     }
+
+    private data class ZoomInfo(val scaleFactor: Float, val translateX: Float, val translateY: Float)
 }
