@@ -17,7 +17,7 @@ class DungeonGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
 
     private val generator = DungeonGenerator(DungeonGenerator.Settings(0.5f, 3, 10, 0.5f))
     private val paint = Paint().apply {
-        strokeWidth = 1f
+        strokeWidth = 2f
         isAntiAlias = true
         style = Paint.Style.STROKE
     }
@@ -30,23 +30,27 @@ class DungeonGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
     private var btnInstant: Button? = null
     private var width: Int = 0
     private var height: Int = 0
+    private var scaledWidth: Int = 0
+    private var scaledHeight: Int = 0
 
     override fun sizeChanged(width: Int, height: Int) {
         this.width = width
         this.height = height
+        scaledWidth = width / SCALE_FACTOR
+        scaledHeight = height / SCALE_FACTOR
 
         btnRestart = Button("RES", width - 200f, height - 120f, width - 40f, height - 40f, Color.TRANSPARENT, Color.GRAY, Color.BLACK, 50f).apply {
-            onClick = { generator.reset(width / SCALE_FACTOR, height / SCALE_FACTOR) }
+            onClick = { generator.reset(scaledWidth, scaledHeight) }
         }
 
         btnInstant = Button("INS", width - 400f, height - 120f, width - 240f, height - 40f, Color.TRANSPARENT, Color.GRAY, Color.BLACK, 50f).apply {
             onClick = {
-                generator.reset(width / SCALE_FACTOR, height / SCALE_FACTOR)
+                generator.reset(scaledWidth, scaledHeight)
                 generator.generateAll()
             }
         }
 
-        generator.reset(width / SCALE_FACTOR, height / SCALE_FACTOR)
+        generator.reset(scaledWidth, scaledHeight)
     }
 
     override fun update(deltaTime: Long) {
@@ -81,5 +85,14 @@ class DungeonGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
         gameSurfaceView.scene = MainMenuScene(gameSurfaceView)
     }
 
-    private fun DungeonGenerator.Room.getRect() = RectF(topLeft.x * SCALE_FACTOR, topLeft.y * SCALE_FACTOR, (topLeft.x + width) * SCALE_FACTOR, (topLeft.y + height) * SCALE_FACTOR)
+    private fun DungeonGenerator.Room.getRect(): RectF {
+        val scaleFactor = SCALE_FACTOR
+
+        val left = (topLeft.x - scaledWidth / 2f) * scaleFactor + this@DungeonGeneratorScene.width / 2f
+        val top = (topLeft.y - scaledHeight / 2f) * scaleFactor + this@DungeonGeneratorScene.height / 2f
+        val right = left + width * scaleFactor
+        val bottom = top + height * scaleFactor
+
+        return RectF(left, top, right, bottom)
+    }
 }
