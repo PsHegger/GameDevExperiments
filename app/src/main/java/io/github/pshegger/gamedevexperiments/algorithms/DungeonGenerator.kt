@@ -49,10 +49,15 @@ class DungeonGenerator(private val settings: Settings) {
 
         if (movingRoom != null) {
             val moveVector = Vector(Math.cos(movingRoom.direction).toFloat(), Math.sin(movingRoom.direction).toFloat())
-            movingRoom.room.topLeft = movingRoom.room.topLeft + moveVector
-            val finalPlace = _rooms
-                    .filter { it.state === RoomState.State.Placed }
-                    .none { it.room.intersects(movingRoom.room, settings.roomMargin) }
+            var ctr = 0
+            var finalPlace = false
+            while (ctr < 3 && !finalPlace) {
+                movingRoom.room.topLeft = movingRoom.room.topLeft + moveVector
+                finalPlace = _rooms
+                        .filter { it.state === RoomState.State.Placed }
+                        .none { it.room.intersects(movingRoom.room, settings.roomMargin) }
+                ctr++
+            }
             if (finalPlace) {
                 movingRoom.state = RoomState.State.Placed
             }
