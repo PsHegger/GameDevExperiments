@@ -1,7 +1,6 @@
 package io.github.pshegger.gamedevexperiments.scenes
 
 import android.graphics.*
-import android.util.Log
 import io.github.pshegger.gamedevexperiments.GameSurfaceView
 import io.github.pshegger.gamedevexperiments.Scene
 import io.github.pshegger.gamedevexperiments.algorithms.DungeonGenerator
@@ -17,7 +16,7 @@ class DungeonGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
         private const val SCREEN_MARGIN = 20
     }
 
-    private val generator = DungeonGenerator(DungeonGenerator.Settings(0.5f, 3, 10, 0.5f))
+    private val generator = DungeonGenerator(DungeonGenerator.Settings(0.6f, 4, 10, 1f))
     private val paint = Paint().apply {
         strokeWidth = 2f
         isAntiAlias = true
