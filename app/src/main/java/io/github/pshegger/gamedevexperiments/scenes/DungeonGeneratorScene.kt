@@ -16,9 +16,8 @@ class DungeonGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
         private const val SCREEN_MARGIN = 20
     }
 
-    private val generator = DungeonGenerator(DungeonGenerator.Settings(0.6f, 4, 10, 1f))
+    private val generator = DungeonGenerator(DungeonGenerator.Settings(0.6f, 4, 10, 0.6f, 8, 12))
     private val paint = Paint().apply {
-        strokeWidth = 2f
         isAntiAlias = true
         style = Paint.Style.STROKE
     }
@@ -72,9 +71,10 @@ class DungeonGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
             paint.color = when (roomState.state) {
                 DungeonGenerator.RoomState.State.Generated -> Color.DKGRAY
                 DungeonGenerator.RoomState.State.Placed -> Color.BLUE
-                DungeonGenerator.RoomState.State.Selected -> Color.RED
+                DungeonGenerator.RoomState.State.Moving -> Color.RED
+                DungeonGenerator.RoomState.State.Selected -> Color.BLACK
             }
-
+            paint.strokeWidth = if (roomState.state == DungeonGenerator.RoomState.State.Selected) 3f else 1f
             canvas.drawRect(roomState.room.getRect(scaleFactor), paint)
         }
 

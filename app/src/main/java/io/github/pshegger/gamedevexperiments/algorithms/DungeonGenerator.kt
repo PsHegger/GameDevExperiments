@@ -12,12 +12,9 @@ class DungeonGenerator(private val settings: Settings) {
     val rooms: List<RoomState>
         get() = _rooms
     val canGenerateMore: Boolean
-        get() = !roomsGenerated || !roomsPlaced
+        get() = generationStep != GenerationStep.Finished
 
-    private val roomsGenerated: Boolean
-        get() = _rooms.sumBy { it.room.area() } >= (width * height) * settings.fillRatio
-    private val roomsPlaced: Boolean
-        get() = rooms.all { it.state == RoomState.State.Placed }
+    private var generationStep: GenerationStep = GenerationStep.RoomGeneration
 
     private val rng = Random(settings.seed ?: System.currentTimeMillis())
 
@@ -29,23 +26,41 @@ class DungeonGenerator(private val settings: Settings) {
         this.height = height
         rng.setSeed(settings.seed ?: System.currentTimeMillis())
         _rooms.clear()
+        generationStep = GenerationStep.RoomGeneration
     }
 
     fun nextStep() {
-        if (!roomsGenerated) {
-            val width = rng.nextInt(settings.maxSize - settings.minSize + 1) + settings.minSize
-            val height = rng.nextInt(settings.maxSize - settings.minSize + 1) + settings.minSize
-            val left = (this.width - width) / 2f
-            val top = (this.height - height) / 2f
-            _rooms.add(RoomState(Room(Vector(left, top), width, height), RoomState.State.Generated))
-            return
+        when (generationStep) {
+            GenerationStep.RoomGeneration -> generateRoom()
+            GenerationStep.RoomMovement -> moveRoom()
+            GenerationStep.RoomSelection -> selectRoom()
         }
+    }
 
+    fun generateAll() {
+        while (canGenerateMore) {
+            nextStep()
+        }
+    }
+
+    private fun generateRoom() {
+        val width = rng.nextInt(settings.maxSize - settings.minSize + 1) + settings.minSize
+        val height = rng.nextInt(settings.maxSize - settings.minSize + 1) + settings.minSize
+        val left = (this.width - width) / 2f
+        val top = (this.height - height) / 2f
+        _rooms.add(RoomState(Room(Vector(left, top), width, height), RoomState.State.Generated))
+
+        if (_rooms.asSequence().map { it.room.area() }.sum() >= this.width * this.height * settings.fillRatio) {
+            generationStep = GenerationStep.RoomMovement
+        }
+    }
+
+    private fun moveRoom() {
         if (_rooms.none { it.state == RoomState.State.Placed }) {
             _rooms[rng.nextInt(_rooms.size)].state = RoomState.State.Placed
         }
 
-        val movingRoom = _rooms.firstOrNull { it.state == RoomState.State.Selected }
+        val movingRoom = _rooms.firstOrNull { it.state == RoomState.State.Moving }
 
         if (movingRoom != null) {
             val moveVector = Vector(Math.cos(movingRoom.direction).toFloat(), Math.sin(movingRoom.direction).toFloat())
@@ -60,20 +75,25 @@ class DungeonGenerator(private val settings: Settings) {
             }
             if (finalPlace) {
                 movingRoom.state = RoomState.State.Placed
+                if (_rooms.all { it.state == RoomState.State.Placed }) {
+                    generationStep = GenerationStep.RoomSelection
+                }
             }
         } else {
             val remainingRooms = _rooms.filter { it.state == RoomState.State.Generated }
             remainingRooms[rng.nextInt(remainingRooms.size)].apply {
-                state = RoomState.State.Selected
+                state = RoomState.State.Moving
                 direction = rng.nextDouble() * 2 * Math.PI
             }
         }
     }
 
-    fun generateAll() {
-        while (canGenerateMore) {
-            nextStep()
+    private fun selectRoom() {
+        val roomCount = rng.nextInt(settings.maxFinalRoomCount - settings.minFinalRoomCount) + settings.minFinalRoomCount
+        _rooms.sortedBy { it.room.area() }.takeLast(roomCount).forEach {
+            it.state = RoomState.State.Selected
         }
+        generationStep = GenerationStep.Finished
     }
 
     data class Room(var topLeft: Vector, val width: Int, val height: Int) {
@@ -87,9 +107,13 @@ class DungeonGenerator(private val settings: Settings) {
 
     data class RoomState(val room: Room, var state: State, var direction: Double = 0.0) {
         enum class State {
-            Generated, Placed, Selected
+            Generated, Placed, Moving, Selected
         }
     }
 
-    data class Settings(val fillRatio: Float, val minSize: Int, val maxSize: Int, val roomMargin: Float = 0f, val seed: Long? = null)
+    data class Settings(val fillRatio: Float, val minSize: Int, val maxSize: Int, val roomMargin: Float = 0f, val minFinalRoomCount: Int, val maxFinalRoomCount: Int, val seed: Long? = null)
+
+    private enum class GenerationStep {
+        RoomGeneration, RoomMovement, RoomSelection, Finished
+    }
 }
