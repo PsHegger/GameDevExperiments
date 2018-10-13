@@ -20,6 +20,8 @@ class DungeonGenerator(private val settings: Settings) {
 
     private var width: Int = 0
     private var height: Int = 0
+    private var delayCtr: Int = 0
+    private var roomCount: Int = 0
 
     fun reset(width: Int, height: Int) {
         this.width = width
@@ -76,6 +78,8 @@ class DungeonGenerator(private val settings: Settings) {
             if (finalPlace) {
                 movingRoom.state = RoomState.State.Placed
                 if (_rooms.all { it.state == RoomState.State.Placed }) {
+                    delayCtr = 0
+                    roomCount = rng.nextInt(settings.maxFinalRoomCount - settings.minFinalRoomCount) + settings.minFinalRoomCount
                     generationStep = GenerationStep.RoomSelection
                 }
             }
@@ -89,11 +93,19 @@ class DungeonGenerator(private val settings: Settings) {
     }
 
     private fun selectRoom() {
-        val roomCount = rng.nextInt(settings.maxFinalRoomCount - settings.minFinalRoomCount) + settings.minFinalRoomCount
-        _rooms.sortedBy { it.room.area() }.takeLast(roomCount).forEach {
-            it.state = RoomState.State.Selected
+        delayCtr++
+        if (delayCtr < 6) {
+            return
         }
-        generationStep = GenerationStep.Finished
+        val generatedCount = _rooms.asSequence().filter { it.state == RoomState.State.Selected }.count()
+        if (generatedCount < roomCount) {
+            _rooms.asSequence().filter { it.state == RoomState.State.Placed }.sortedBy { it.room.area() }.toList().takeLast(1).forEach {
+                it.state = RoomState.State.Selected
+            }
+        } else {
+            generationStep = GenerationStep.Finished
+        }
+        delayCtr = 0
     }
 
     data class Room(var topLeft: Vector, val width: Int, val height: Int) {
