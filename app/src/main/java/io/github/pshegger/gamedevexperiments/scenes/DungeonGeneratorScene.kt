@@ -4,6 +4,7 @@ import android.graphics.*
 import io.github.pshegger.gamedevexperiments.GameSurfaceView
 import io.github.pshegger.gamedevexperiments.Scene
 import io.github.pshegger.gamedevexperiments.algorithms.DungeonGenerator
+import io.github.pshegger.gamedevexperiments.geometry.Vector
 import io.github.pshegger.gamedevexperiments.hud.Button
 import io.github.pshegger.gamedevexperiments.scenes.menu.MainMenuScene
 
@@ -24,6 +25,11 @@ class DungeonGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
     private val textPaint = Paint().apply {
         textSize = 42f
         color = Color.GRAY
+    }
+    private val edgePaint = Paint().apply {
+        isAntiAlias = true
+        style = Paint.Style.FILL_AND_STROKE
+        color = Color.BLACK
     }
 
     private var btnRestart: Button? = null
@@ -65,7 +71,7 @@ class DungeonGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
     override fun render(canvas: Canvas) {
         canvas.drawColor(Color.rgb(154, 206, 235))
 
-        val scaleFactor = calculateScale()
+        val zoomInfo = calculateScale()
 
         generator.rooms.forEach { roomState ->
             paint.color = when (roomState.state) {
@@ -75,7 +81,18 @@ class DungeonGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
                 DungeonGenerator.RoomState.State.Selected -> Color.BLACK
             }
             paint.strokeWidth = if (roomState.state == DungeonGenerator.RoomState.State.Selected) 3f else 1f
-            canvas.drawRect(roomState.room.getRect(scaleFactor), paint)
+            canvas.drawRect(roomState.room.getRect(zoomInfo), paint)
+        }
+
+        generator.edges.forEach { edge ->
+            val start = calculatePosition(edge.start, zoomInfo)
+            val end = calculatePosition(edge.end, zoomInfo)
+
+            edgePaint.strokeWidth = 10f
+            canvas.drawPoint(start.x, start.y, edgePaint)
+            canvas.drawPoint(end.x, end.y, edgePaint)
+            edgePaint.strokeWidth = 2f
+            canvas.drawLine(start.x, start.y, end.x, end.y, edgePaint)
         }
 
         canvas.drawText("Count: ${generator.rooms.size}", 10f, height - 10f, textPaint)
@@ -101,19 +118,17 @@ class DungeonGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
         val verticalScale = (height - 2 * SCREEN_MARGIN) / maxHeight
         val scale = listOf(verticalScale, horizontalScale, SCALE_FACTOR.toFloat()).min()!!
 
-        val leftPos = (minLeft - scaledWidth / 2) * scale + width / 2f
-        val rightPos = (maxRight - scaledWidth / 2) * scale + width / 2f
-        val topPos = (minTop - scaledHeight / 2) * scale + height / 2f
-        val bottomPos = (maxBottom - scaledHeight / 2) * scale + height / 2f
+        val topLeft = calculatePosition(Vector(minLeft, minTop), ZoomInfo(scale, 0f, 0f))
+        val bottomRight = calculatePosition(Vector(maxRight, maxBottom), ZoomInfo(scale, 0f, 0f))
 
         val translateX = when {
-            leftPos < SCREEN_MARGIN -> SCREEN_MARGIN - leftPos
-            rightPos > width - SCREEN_MARGIN -> (width - SCREEN_MARGIN) - rightPos
+            topLeft.x < SCREEN_MARGIN -> SCREEN_MARGIN - topLeft.x
+            bottomRight.x > width - SCREEN_MARGIN -> (width - SCREEN_MARGIN) - bottomRight.x
             else -> 0f
         }
         val translateY = when {
-            topPos < SCREEN_MARGIN -> SCREEN_MARGIN - topPos
-            bottomPos > height - SCREEN_MARGIN -> (height - SCREEN_MARGIN) - bottomPos
+            topLeft.y < SCREEN_MARGIN -> SCREEN_MARGIN - topLeft.y
+            bottomRight.y > height - SCREEN_MARGIN -> (height - SCREEN_MARGIN) - bottomRight.y
             else -> 0f
         }
 
@@ -121,13 +136,17 @@ class DungeonGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
     }
 
     private fun DungeonGenerator.Room.getRect(zoomInfo: ZoomInfo): RectF {
-        val left = (topLeft.x - scaledWidth / 2f) * zoomInfo.scaleFactor + this@DungeonGeneratorScene.width / 2f + zoomInfo.translateX
-        val top = (topLeft.y - scaledHeight / 2f) * zoomInfo.scaleFactor + this@DungeonGeneratorScene.height / 2f + zoomInfo.translateY
-        val right = left + width * zoomInfo.scaleFactor
-        val bottom = top + height * zoomInfo.scaleFactor
+        val scaledTopLeft = calculatePosition(topLeft, zoomInfo)
+        val right = scaledTopLeft.x + width * zoomInfo.scaleFactor
+        val bottom = scaledTopLeft.y + height * zoomInfo.scaleFactor
 
-        return RectF(left, top, right, bottom)
+        return RectF(scaledTopLeft.x, scaledTopLeft.y, right, bottom)
     }
+
+    private fun calculatePosition(v: Vector, zoomInfo: ZoomInfo) = Vector(
+            (v.x - scaledWidth / 2f) * zoomInfo.scaleFactor + width / 2f + zoomInfo.translateX,
+            (v.y - scaledHeight / 2f) * zoomInfo.scaleFactor + height / 2f + zoomInfo.translateY
+    )
 
     private data class ZoomInfo(val scaleFactor: Float, val translateX: Float, val translateY: Float)
 }

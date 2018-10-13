@@ -1,6 +1,8 @@
 package io.github.pshegger.gamedevexperiments.algorithms
 
 import android.graphics.RectF
+import android.util.Log
+import io.github.pshegger.gamedevexperiments.geometry.Edge
 import io.github.pshegger.gamedevexperiments.geometry.Vector
 import java.util.Random
 
@@ -11,6 +13,8 @@ class DungeonGenerator(private val settings: Settings) {
     private val _rooms = arrayListOf<RoomState>()
     val rooms: List<RoomState>
         get() = _rooms
+    val edges: List<Edge>
+        get() = listOf()
     val canGenerateMore: Boolean
         get() = generationStep != GenerationStep.Finished
 
@@ -36,6 +40,8 @@ class DungeonGenerator(private val settings: Settings) {
             GenerationStep.RoomGeneration -> generateRoom()
             GenerationStep.RoomMovement -> moveRoom()
             GenerationStep.RoomSelection -> selectRoom()
+            GenerationStep.SpanningTreeGeneration -> generateSpanningTree()
+            else -> Log.d("DungeonGenerator", "The generation is already over")
         }
     }
 
@@ -103,8 +109,17 @@ class DungeonGenerator(private val settings: Settings) {
                 it.state = RoomState.State.Selected
             }
         } else {
-            generationStep = GenerationStep.Finished
+            generationStep = GenerationStep.SpanningTreeGeneration
         }
+        delayCtr = 0
+    }
+
+    private fun generateSpanningTree() {
+        delayCtr ++
+        if (delayCtr < 6) {
+            return
+        }
+        generationStep = GenerationStep.Finished
         delayCtr = 0
     }
 
@@ -126,6 +141,6 @@ class DungeonGenerator(private val settings: Settings) {
     data class Settings(val fillRatio: Float, val minSize: Int, val maxSize: Int, val roomMargin: Float = 0f, val minFinalRoomCount: Int, val maxFinalRoomCount: Int, val seed: Long? = null)
 
     private enum class GenerationStep {
-        RoomGeneration, RoomMovement, RoomSelection, Finished
+        RoomGeneration, RoomMovement, RoomSelection, SpanningTreeGeneration, Finished
     }
 }
