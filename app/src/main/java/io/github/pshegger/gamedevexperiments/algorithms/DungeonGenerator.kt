@@ -11,7 +11,7 @@ import java.util.Random
  */
 class DungeonGenerator(private val settings: Settings) {
     private val _rooms = arrayListOf<RoomState>()
-    private val corridors = arrayListOf<Corridor>()
+    private val corridors = arrayListOf<Graph.Edge<Room>>()
 
     val rooms: List<RoomState>
         get() = _rooms
@@ -123,7 +123,7 @@ class DungeonGenerator(private val settings: Settings) {
             return
         }
         val finalRooms = _rooms.filter { it.state == RoomState.State.Selected }
-        val graph = Graph(finalRooms.map { it.room }, corridors.map { Graph.Edge(it.start, it.end) })
+        val graph = Graph(finalRooms.map { it.room }, corridors)
 
         finalRooms.mapIndexed { i, x ->
             finalRooms.mapIndexed { j, y ->
@@ -133,7 +133,7 @@ class DungeonGenerator(private val settings: Settings) {
                 .filterNot { graph.isRouteAvailable(it.first, it.second) }
                 .sortedBy { it.first.center.distance(it.second.center) }
                 .take(1)
-                .forEach { corridors.add(Corridor(it.first, it.second)) }
+                .forEach { corridors.add(Graph.Edge(it.first, it.second)) }
 
         if (corridors.size == roomCount - 1) {
             generationStep = GenerationStep.Finished
@@ -155,8 +155,6 @@ class DungeonGenerator(private val settings: Settings) {
             Generated, Placed, Moving, Selected
         }
     }
-
-    private data class Corridor(val start: Room, val end: Room)
 
     data class Settings(val fillRatio: Float, val minSize: Int, val maxSize: Int, val roomMargin: Float = 0f, val minFinalRoomCount: Int, val maxFinalRoomCount: Int, val seed: Long? = null)
 
