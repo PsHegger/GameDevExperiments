@@ -1,7 +1,7 @@
 package io.github.pshegger.gamedevexperiments.algorithms
 
 /**
- * @author gergely.hegedus@tappointment.com
+ * @author pshegger@gmail.com
  */
 data class Graph<T>(val nodes: List<T>, val edges: List<Edge<T>>) {
     fun shortestPath(start: T, end: T): List<T>? {
