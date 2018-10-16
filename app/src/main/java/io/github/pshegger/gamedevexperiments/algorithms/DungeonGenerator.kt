@@ -11,10 +11,12 @@ import java.util.Random
  */
 class DungeonGenerator(private val settings: Settings) {
     private val _rooms = arrayListOf<RoomState>()
+    private val corridors = arrayListOf<Corridor>()
+
     val rooms: List<RoomState>
         get() = _rooms
     val edges: List<Edge>
-        get() = listOf()
+        get() = corridors.map { Edge(it.start.center, it.end.center) }
     val canGenerateMore: Boolean
         get() = generationStep != GenerationStep.Finished
 
@@ -32,6 +34,7 @@ class DungeonGenerator(private val settings: Settings) {
         this.height = height
         rng.setSeed(settings.seed ?: System.currentTimeMillis())
         _rooms.clear()
+        corridors.clear()
         generationStep = GenerationStep.RoomGeneration
     }
 
@@ -115,11 +118,26 @@ class DungeonGenerator(private val settings: Settings) {
     }
 
     private fun generateSpanningTree() {
-        delayCtr ++
+        delayCtr++
         if (delayCtr < 6) {
             return
         }
-        generationStep = GenerationStep.Finished
+        val finalRooms = _rooms.filter { it.state == RoomState.State.Selected }
+        val graph = Graph(finalRooms.map { it.room }, corridors.map { Graph.Edge(it.start, it.end) })
+
+        finalRooms.mapIndexed { i, x ->
+            finalRooms.mapIndexed { j, y ->
+                if (i < j) Pair(x.room, y.room) else null
+            }.filterNotNull()
+        }.flatten()
+                .filterNot { graph.isRouteAvailable(it.first, it.second) }
+                .sortedBy { it.first.center.distance(it.second.center) }
+                .take(1)
+                .forEach { corridors.add(Corridor(it.first, it.second)) }
+
+        if (corridors.size == roomCount - 1) {
+            generationStep = GenerationStep.Finished
+        }
         delayCtr = 0
     }
 
@@ -137,6 +155,8 @@ class DungeonGenerator(private val settings: Settings) {
             Generated, Placed, Moving, Selected
         }
     }
+
+    private data class Corridor(val start: Room, val end: Room)
 
     data class Settings(val fillRatio: Float, val minSize: Int, val maxSize: Int, val roomMargin: Float = 0f, val minFinalRoomCount: Int, val maxFinalRoomCount: Int, val seed: Long? = null)
 
