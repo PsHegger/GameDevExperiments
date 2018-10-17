@@ -27,7 +27,6 @@ class DungeonGenerator(private val settings: Settings) {
     private var width: Int = 0
     private var height: Int = 0
     private var delayCtr: Int = 0
-    private var roomCount: Int = 0
 
     fun reset(width: Int, height: Int) {
         this.width = width
@@ -88,7 +87,6 @@ class DungeonGenerator(private val settings: Settings) {
                 movingRoom.state = RoomState.State.Placed
                 if (_rooms.all { it.state == RoomState.State.Placed }) {
                     delayCtr = 0
-                    roomCount = rng.nextInt(settings.maxFinalRoomCount - settings.minFinalRoomCount) + settings.minFinalRoomCount
                     generationStep = GenerationStep.RoomSelection
                 }
             }
@@ -106,12 +104,10 @@ class DungeonGenerator(private val settings: Settings) {
         if (delayCtr < 6) {
             return
         }
-        val generatedCount = _rooms.asSequence().filter { it.state == RoomState.State.Selected }.count()
-        if (generatedCount < roomCount) {
-            _rooms.asSequence().filter { it.state == RoomState.State.Placed }.sortedBy { it.room.area() }.toList().takeLast(1).forEach {
-                it.state = RoomState.State.Selected
-            }
-        } else {
+        val minArea = _rooms.map { it.room.area() }.average() * settings.finalAreaRatio
+        val possibleRooms = _rooms.filter { it.state == RoomState.State.Placed && it.room.area() >= minArea }
+        possibleRooms.take(1).forEach { it.state = RoomState.State.Selected }
+        if (possibleRooms.size == 1) {
             generationStep = GenerationStep.SpanningTreeGeneration
         }
         delayCtr = 0
@@ -135,7 +131,7 @@ class DungeonGenerator(private val settings: Settings) {
                 .take(1)
                 .forEach { corridors.add(Graph.Edge(it.first, it.second)) }
 
-        if (corridors.size == roomCount - 1) {
+        if (corridors.size == finalRooms.size - 1) {
             generationStep = GenerationStep.Finished
         }
         delayCtr = 0
@@ -156,7 +152,7 @@ class DungeonGenerator(private val settings: Settings) {
         }
     }
 
-    data class Settings(val fillRatio: Float, val minSize: Int, val maxSize: Int, val roomMargin: Float = 0f, val minFinalRoomCount: Int, val maxFinalRoomCount: Int, val seed: Long? = null)
+    data class Settings(val fillRatio: Float, val minSize: Int, val maxSize: Int, val roomMargin: Float = 0f, val finalAreaRatio: Float, val seed: Long? = null)
 
     private enum class GenerationStep {
         RoomGeneration, RoomMovement, RoomSelection, SpanningTreeGeneration, Finished

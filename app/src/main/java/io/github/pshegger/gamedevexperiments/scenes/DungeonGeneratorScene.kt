@@ -17,7 +17,7 @@ class DungeonGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
         private const val SCREEN_MARGIN = 20
     }
 
-    private val generator = DungeonGenerator(DungeonGenerator.Settings(0.6f, 4, 10, 0.6f, 10, 15))
+    private val generator = DungeonGenerator(DungeonGenerator.Settings(0.6f, 4, 10, 0.6f, 1.3f))
     private val paint = Paint().apply {
         isAntiAlias = true
         style = Paint.Style.STROKE
