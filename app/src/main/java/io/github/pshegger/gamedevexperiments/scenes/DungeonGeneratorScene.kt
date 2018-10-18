@@ -78,9 +78,19 @@ class DungeonGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
                 DungeonGenerator.RoomState.State.Generated -> Color.DKGRAY
                 DungeonGenerator.RoomState.State.Placed -> Color.BLUE
                 DungeonGenerator.RoomState.State.Moving -> Color.RED
-                DungeonGenerator.RoomState.State.Selected -> Color.BLACK
+                DungeonGenerator.RoomState.State.Selected -> when (roomState.room.type) {
+                    DungeonGenerator.Room.RoomType.Entrance -> Color.rgb(167, 65, 101)
+                    DungeonGenerator.Room.RoomType.QuestObjective -> Color.rgb(141, 103, 8)
+                    else -> Color.BLACK
+                }
             }
-            paint.strokeWidth = if (roomState.state == DungeonGenerator.RoomState.State.Selected) 3f else 1f
+            paint.strokeWidth = when (roomState.state) {
+                DungeonGenerator.RoomState.State.Selected -> when (roomState.room.type) {
+                    DungeonGenerator.Room.RoomType.Entrance -> 5f
+                    else -> 3f
+                }
+                else -> 1f
+            }
             canvas.drawRect(roomState.room.getRect(zoomInfo), paint)
         }
 

@@ -19,6 +19,8 @@ class DungeonGenerator(private val settings: Settings) {
         get() = corridors.map { Edge(it.start.center, it.end.center) }
     val canGenerateMore: Boolean
         get() = generationStep != GenerationStep.Finished
+    private val selectedRooms: List<RoomState>
+        get() = _rooms.filter { it.state == RoomState.State.Selected }
 
     private var generationStep: GenerationStep = GenerationStep.RoomGeneration
 
@@ -27,6 +29,8 @@ class DungeonGenerator(private val settings: Settings) {
     private var width: Int = 0
     private var height: Int = 0
     private var delayCtr: Int = 0
+    private var entranceCtr: Int = 0
+    private var entranceCandidate: Int = 0
 
     fun reset(width: Int, height: Int) {
         this.width = width
@@ -43,6 +47,7 @@ class DungeonGenerator(private val settings: Settings) {
             GenerationStep.RoomMovement -> moveRoom()
             GenerationStep.RoomSelection -> selectRoom()
             GenerationStep.SpanningTreeGeneration -> generateSpanningTree()
+            GenerationStep.EntranceSelection -> selectEntrance()
             else -> Log.d("DungeonGenerator", "The generation is already over")
         }
     }
@@ -118,11 +123,10 @@ class DungeonGenerator(private val settings: Settings) {
         if (delayCtr < 6) {
             return
         }
-        val finalRooms = _rooms.filter { it.state == RoomState.State.Selected }
-        val graph = Graph(finalRooms.map { it.room }, corridors)
+        val graph = Graph(selectedRooms.map { it.room }, corridors)
 
-        finalRooms.mapIndexed { i, x ->
-            finalRooms.mapIndexed { j, y ->
+        selectedRooms.mapIndexed { i, x ->
+            selectedRooms.mapIndexed { j, y ->
                 if (i < j) Pair(x.room, y.room) else null
             }.filterNotNull()
         }.flatten()
@@ -131,19 +135,62 @@ class DungeonGenerator(private val settings: Settings) {
                 .take(1)
                 .forEach { corridors.add(Graph.Edge(it.first, it.second)) }
 
-        if (corridors.size == finalRooms.size - 1) {
-            generationStep = GenerationStep.Finished
+        if (corridors.size == selectedRooms.size - 1) {
+            selectedRooms[0].room.type = Room.RoomType.Entrance
+            entranceCtr = 1
+            entranceCandidate = 0
+            generationStep = GenerationStep.EntranceSelection
         }
         delayCtr = 0
     }
 
-    data class Room(var topLeft: Vector, val width: Int, val height: Int) {
+    private fun selectEntrance() {
+        delayCtr++
+        if (delayCtr < 20) {
+            return
+        }
+
+        if (entranceCtr < selectedRooms.size) {
+            val graph = Graph(selectedRooms.map { it.room }, corridors)
+            val currBranchDistance = graph.branchDistance(selectedRooms[entranceCandidate].room)
+            val newBranchDistance = graph.branchDistance(selectedRooms[entranceCtr].room)
+            if (newBranchDistance > currBranchDistance) {
+                entranceCandidate = entranceCtr
+            }
+            selectedRooms[entranceCtr - 1].room.type = Room.RoomType.Room
+            selectedRooms[entranceCtr].room.type = Room.RoomType.Entrance
+            entranceCtr++
+        } else {
+            selectedRooms[entranceCtr - 1].room.type = Room.RoomType.Room
+            selectedRooms[entranceCandidate].room.type = Room.RoomType.Entrance
+            generationStep = GenerationStep.Finished
+        }
+
+        delayCtr = 0
+    }
+
+    private fun <T> Graph<T>.branchDistance(n: T, prev: T? = null): Int {
+        val neighborCount = neighbors(n).size
+        if ((prev == null && neighborCount > 1) || neighborCount > 2) {
+            return 0
+        }
+
+        val next = neighbors(n).filterNot { it.otherEnd(n) == prev }.firstOrNull()?.otherEnd(n) ?: return 1
+
+        return branchDistance(next, n) + 1
+    }
+
+    data class Room(var topLeft: Vector, val width: Int, val height: Int, var type: RoomType = RoomType.Room) {
         val center: Vector
             get() = Vector(topLeft.x + width / 2f, topLeft.y + height / 2f)
 
         fun area() = width * height
         fun intersects(other: Room, margin: Float) = getRect(margin).intersect(other.getRect(0f))
         private fun getRect(margin: Float) = RectF(topLeft.x - margin, topLeft.y - margin, topLeft.x + width + margin, topLeft.y + height + margin)
+
+        enum class RoomType {
+            Room, Entrance, QuestObjective
+        }
     }
 
     data class RoomState(val room: Room, var state: State, var direction: Double = 0.0) {
@@ -155,6 +202,6 @@ class DungeonGenerator(private val settings: Settings) {
     data class Settings(val fillRatio: Float, val minSize: Int, val maxSize: Int, val roomMargin: Float = 0f, val finalAreaRatio: Float, val seed: Long? = null)
 
     private enum class GenerationStep {
-        RoomGeneration, RoomMovement, RoomSelection, SpanningTreeGeneration, Finished
+        RoomGeneration, RoomMovement, RoomSelection, SpanningTreeGeneration, EntranceSelection, Finished
     }
 }
