@@ -4,6 +4,7 @@ import android.graphics.RectF
 import android.util.Log
 import io.github.pshegger.gamedevexperiments.geometry.Edge
 import io.github.pshegger.gamedevexperiments.geometry.Vector
+import io.github.pshegger.gamedevexperiments.utils.weightedRandom
 import java.util.Random
 
 /**
@@ -31,6 +32,7 @@ class DungeonGenerator(private val settings: Settings) {
     private var delayCtr: Int = 0
     private var entranceCtr: Int = 0
     private var entranceCandidate: Int = 0
+    private var distances = mutableListOf<Pair<RoomState, Int>>()
 
     fun reset(width: Int, height: Int) {
         this.width = width
@@ -38,6 +40,7 @@ class DungeonGenerator(private val settings: Settings) {
         rng.setSeed(settings.seed ?: System.currentTimeMillis())
         _rooms.clear()
         corridors.clear()
+        distances.clear()
         generationStep = GenerationStep.RoomGeneration
     }
 
@@ -48,6 +51,7 @@ class DungeonGenerator(private val settings: Settings) {
             GenerationStep.RoomSelection -> selectRoom()
             GenerationStep.SpanningTreeGeneration -> generateSpanningTree()
             GenerationStep.EntranceSelection -> selectEntrance()
+            GenerationStep.QuestObjectiveSelection -> selectQuestObjective()
             else -> Log.d("DungeonGenerator", "The generation is already over")
         }
     }
@@ -81,7 +85,7 @@ class DungeonGenerator(private val settings: Settings) {
             val moveVector = Vector(Math.cos(movingRoom.direction).toFloat(), Math.sin(movingRoom.direction).toFloat())
             var ctr = 0
             var finalPlace = false
-            while (ctr < 3 && !finalPlace) {
+            while (ctr < 4 && !finalPlace) {
                 movingRoom.room.topLeft = movingRoom.room.topLeft + moveVector
                 finalPlace = _rooms
                         .filter { it.state === RoomState.State.Placed }
@@ -146,7 +150,7 @@ class DungeonGenerator(private val settings: Settings) {
 
     private fun selectEntrance() {
         delayCtr++
-        if (delayCtr < 20) {
+        if (delayCtr < 6) {
             return
         }
 
@@ -163,6 +167,34 @@ class DungeonGenerator(private val settings: Settings) {
         } else {
             selectedRooms[entranceCtr - 1].room.type = Room.RoomType.Room
             selectedRooms[entranceCandidate].room.type = Room.RoomType.Entrance
+            generationStep = GenerationStep.QuestObjectiveSelection
+        }
+
+        delayCtr = 0
+    }
+
+    private fun selectQuestObjective() {
+        delayCtr++
+        if (delayCtr < 18) {
+            return
+        }
+        val graph = Graph(selectedRooms.map { it.room }, corridors)
+        val leaveRooms = selectedRooms.filter { it.room.type == Room.RoomType.Room && graph.neighbors(it.room).size == 1 }
+        if (leaveRooms.isNotEmpty()) {
+            val entrance = selectedRooms.first { it.room.type == Room.RoomType.Entrance }
+            leaveRooms.firstOrNull()?.let { roomState ->
+                val distance = graph.shortestPath(entrance.room, roomState.room)?.let { it.size - 1 } ?: 0
+                val weight = Math.round(Math.pow(settings.questObjectiveDistanceFactor.toDouble(), distance.toDouble())).toInt()
+                distances.add(Pair(roomState, weight))
+                roomState.room.type = Room.RoomType.QuestObjective
+            }
+        } else {
+            val questObjective = distances.weightedRandom(rng)
+            selectedRooms
+                    .filter { it.room.type == Room.RoomType.QuestObjective }
+                    .forEach {
+                        it.room.type = if (it == questObjective) Room.RoomType.QuestObjective else Room.RoomType.Room
+                    }
             generationStep = GenerationStep.Finished
         }
 
@@ -199,9 +231,9 @@ class DungeonGenerator(private val settings: Settings) {
         }
     }
 
-    data class Settings(val fillRatio: Float, val minSize: Int, val maxSize: Int, val roomMargin: Float = 0f, val finalAreaRatio: Float, val seed: Long? = null)
+    data class Settings(val fillRatio: Float, val minSize: Int, val maxSize: Int, val finalAreaRatio: Float, val questObjectiveDistanceFactor: Float, val roomMargin: Float = 0f, val seed: Long? = null)
 
     private enum class GenerationStep {
-        RoomGeneration, RoomMovement, RoomSelection, SpanningTreeGeneration, EntranceSelection, Finished
+        RoomGeneration, RoomMovement, RoomSelection, SpanningTreeGeneration, EntranceSelection, QuestObjectiveSelection, Finished
     }
 }
