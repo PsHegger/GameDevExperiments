@@ -10,7 +10,7 @@ import java.util.*
 /**
  * @author pshegger@gmail.com
  */
-class MapGenerator {
+class MapGenerator(private val settings: Settings) {
     val canGenerateMore: Boolean
         get() = _state != State.Finished
 
@@ -49,7 +49,7 @@ class MapGenerator {
         this.width = width
         this.height = height
 
-        poissonGenerator = PoissonBridson(margin = 5, radius = 30)
+        poissonGenerator = PoissonBridson(margin = settings.poissonMargin, radius = settings.poissonRadius)
         poissonGenerator.reset(this.width, this.height)
         _state = State.Poisson
     }
@@ -101,15 +101,19 @@ class MapGenerator {
     private fun simplexStep() {
         if (_mapPolygons.isEmpty()) {
             val simplex = SimplexNoise(100, 0.1, Random().nextInt())
+            val columnCount = width / settings.simplexGridSize
+            val rowCount = height / settings.simplexGridSize
 
-            val simplexValues = sortedCells.map { c -> simplex.getNoise(c.p.x.toInt(), c.p.y.toInt()) }
+            val simplexValues = sortedCells.map { c -> simplex.getNoise(c.p.x.toInt() / columnCount, c.p.y.toInt() / rowCount) }
             val minSimplex = simplexValues.min()!!
             val maxSimplex = simplexValues.max()!!
+            Log.d("Simplex", "Min: $minSimplex, max: $maxSimplex")
             mapPolygonValues = simplexValues.map { (it - minSimplex) / (maxSimplex - minSimplex) }
+            Log.d("Simplex", "$mapPolygonValues")
         }
 
         val i = _mapPolygons.size
-        val mapPoly = MapPolygon(sortedCells[i], Math.round(255 * mapPolygonValues[i]).toInt())
+        val mapPoly = MapPolygon(sortedCells[i], mapPolygonValues[i].toFloat())
         _mapPolygons.add(mapPoly)
 
         if (_mapPolygons.size == sortedCells.size) {
@@ -121,5 +125,7 @@ class MapGenerator {
         Poisson, Delaunay, Voronoi, Simplex, Finished
     }
 
-    data class MapPolygon(val polygon: Polygon, val value: Int)
+    data class MapPolygon(val polygon: Polygon, val value: Float)
+
+    data class Settings(val poissonMargin: Int, val poissonRadius: Int, val simplexGridSize: Int)
 }

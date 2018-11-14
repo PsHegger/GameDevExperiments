@@ -7,7 +7,7 @@ data class Polygon(val p: Vector, val edges: MutableList<Edge> = mutableListOf()
     val vectorRoute: List<Vector>? by lazy {
         val points = edges.flatMap { listOf(it.start, it.end) }.distinct()
         val singleEndPoint = points.find { p -> edges.count { e -> e.start == p || e.end == p } == 1 }
-        if (singleEndPoint != null) {
+        if (singleEndPoint != null || edges.isEmpty()) {
             return@lazy null
         }
 

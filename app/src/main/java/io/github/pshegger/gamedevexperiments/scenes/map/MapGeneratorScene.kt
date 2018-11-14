@@ -18,7 +18,7 @@ import io.github.pshegger.gamedevexperiments.utils.toPointsArray
  * @author pshegger@gmail.com
  */
 class MapGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
-    private var generator = MapGenerator()
+    private var generator = MapGenerator(MapGenerator.Settings(5, 30, 150))
     var width: Int = 0
     var height: Int = 0
 
@@ -128,7 +128,9 @@ class MapGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
     private fun renderSimplex(canvas: Canvas) {
         generator.mapPolygons.forEach { mp ->
             mp.polygon.toPath()?.let { path ->
-                cellPaint.color = Color.rgb(mp.value, mp.value, mp.value)
+                val color = Math.round(mp.value * 255)
+                cellPaint.color = Color.rgb(color, color, color)
+
                 canvas.drawPath(path, cellPaint)
             }
         }
