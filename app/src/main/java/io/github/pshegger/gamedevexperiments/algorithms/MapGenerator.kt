@@ -1,5 +1,6 @@
 package io.github.pshegger.gamedevexperiments.algorithms
 
+import android.util.Log
 import io.github.pshegger.gamedevexperiments.algorithms.simplex.SimplexNoise
 import io.github.pshegger.gamedevexperiments.geometry.Edge
 import io.github.pshegger.gamedevexperiments.geometry.Polygon
@@ -11,7 +12,7 @@ import java.util.*
  */
 class MapGenerator {
     val canGenerateMore: Boolean
-        get() = poissonGenerator.canGenerateMore || delaunayGenerator.canGenerateMore || voronoi.canGenerateMore || _mapPolygons.size < sortedCells.size
+        get() = _state != State.Finished
 
     val poissonPoints: List<PoissonBridson.PointState>
         get() = poissonGenerator.points
@@ -48,59 +49,71 @@ class MapGenerator {
         this.width = width
         this.height = height
 
-        poissonGenerator = PoissonBridson(margin = 5, radius = 40)
+        poissonGenerator = PoissonBridson(margin = 5, radius = 30)
         poissonGenerator.reset(this.width, this.height)
         _state = State.Poisson
     }
 
     fun generateNext() {
-        if (poissonGenerator.canGenerateMore) {
-            poissonGenerator.generateNextPoint()
-            if (!poissonGenerator.canGenerateMore) {
-                delaunayGenerator = DelaunayGenerator(poissonGenerator.points.map { it.p })
-                delaunayGenerator.reset(width, height)
-                _state = State.Delaunay
-            }
-            return
-        }
-
-        if (delaunayGenerator.canGenerateMore) {
-            delaunayGenerator.generateNextEdge()
-            if (!delaunayGenerator.canGenerateMore) {
-                voronoi = Voronoi(delaunayGenerator.triangles)
-                voronoi.reset()
-                _state = State.Voronoi
-            }
-            return
-        }
-
-        if (voronoi.canGenerateMore) {
-            voronoi.generateNextEdge()
-            if (!voronoi.canGenerateMore) {
-                sortedCells = voronoi.polygons.sortedBy { it.p.y * width + it.p.x }
-                val simplex = SimplexNoise(100, 0.1, Random().nextInt())
-                _mapPolygons.clear()
-
-                val simplexValues = sortedCells.map { c -> simplex.getNoise(c.p.x.toInt(), c.p.y.toInt()) }
-                val minSimplex = simplexValues.min()!!
-                val maxSimplex = simplexValues.max()!!
-                mapPolygonValues = simplexValues.map { (it - minSimplex) / (maxSimplex - minSimplex) }
-
-                _state = State.Simplex
-            }
-            return
-        }
-
-        if (_mapPolygons.size < sortedCells.size) {
-            val i = _mapPolygons.size
-            val mapPoly = MapPolygon(sortedCells[i], Math.round(255 * mapPolygonValues[i]).toInt())
-            _mapPolygons.add(mapPoly)
+        when (_state) {
+            State.Poisson -> poissonStep()
+            State.Delaunay -> delaunayStep()
+            State.Voronoi -> voronoiStep()
+            State.Simplex -> simplexStep()
+            State.Finished -> Unit
         }
     }
 
     fun generateAll() {
         while (canGenerateMore) {
             generateNext()
+        }
+    }
+
+    private fun poissonStep() {
+        poissonGenerator.generateNextPoint()
+        if (!poissonGenerator.canGenerateMore) {
+            delaunayGenerator = DelaunayGenerator(poissonGenerator.points.map { it.p })
+            delaunayGenerator.reset(width, height)
+            _state = State.Delaunay
+        }
+    }
+
+    private fun delaunayStep() {
+        delaunayGenerator.generateNextEdge()
+        if (!delaunayGenerator.canGenerateMore) {
+            voronoi = Voronoi(delaunayGenerator.triangles)
+            voronoi.reset()
+            _state = State.Voronoi
+        }
+    }
+
+    private fun voronoiStep() {
+        voronoi.generateNextEdge()
+
+        if (!voronoi.canGenerateMore) {
+            sortedCells = voronoi.polygons.sortedBy { it.p.y * width + it.p.x }
+            _mapPolygons.clear()
+            _state = State.Simplex
+        }
+    }
+
+    private fun simplexStep() {
+        if (_mapPolygons.isEmpty()) {
+            val simplex = SimplexNoise(100, 0.1, Random().nextInt())
+
+            val simplexValues = sortedCells.map { c -> simplex.getNoise(c.p.x.toInt(), c.p.y.toInt()) }
+            val minSimplex = simplexValues.min()!!
+            val maxSimplex = simplexValues.max()!!
+            mapPolygonValues = simplexValues.map { (it - minSimplex) / (maxSimplex - minSimplex) }
+        }
+
+        val i = _mapPolygons.size
+        val mapPoly = MapPolygon(sortedCells[i], Math.round(255 * mapPolygonValues[i]).toInt())
+        _mapPolygons.add(mapPoly)
+
+        if (_mapPolygons.size == sortedCells.size) {
+            _state = State.Finished
         }
     }
 

@@ -43,7 +43,7 @@ class SimplexGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
 
     override fun update(deltaTime: Long) {
         if (generator.canGenerateMore) {
-            timeLimitedWhile(15L, {generator.canGenerateMore}) {
+            timeLimitedWhile(15.0, {generator.canGenerateMore}) {
                 generator.generateNextPoint()
             }
         }

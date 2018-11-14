@@ -69,7 +69,14 @@ class MapGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
 
     override fun update(deltaTime: Long) {
         if (generator.canGenerateMore) {
-            timeLimitedWhile(5L, { generator.canGenerateMore }) {
+            val timeLimit = when (generator.state) {
+                MapGenerator.State.Poisson -> 10.0
+                MapGenerator.State.Voronoi -> 2.0
+                MapGenerator.State.Simplex -> 0.02
+                else -> 5.0
+            }
+
+            timeLimitedWhile(timeLimit, { generator.canGenerateMore }) {
                 generator.generateNext()
             }
         }

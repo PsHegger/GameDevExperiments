@@ -39,8 +39,8 @@ fun <T> List<T>.others(o: T) = filterNot { it == o }
 fun Iterable<Edge>.toLinesArray() = flatMap { listOf(it.start.x, it.start.y, it.end.x, it.end.y) }.toFloatArray()
 fun Iterable<Vector>.toPointsArray() = flatMap { listOf(it.x, it.y) }.toFloatArray()
 
-inline fun timeLimitedWhile(maxExecutionMs: Long, predicate: () -> Boolean, action: () -> Unit) {
-    val maxExecutionNs = TimeUnit.MILLISECONDS.toNanos(maxExecutionMs)
+inline fun timeLimitedWhile(maxExecutionMs: Double, predicate: () -> Boolean, action: () -> Unit) {
+    val maxExecutionNs = Math.round(maxExecutionMs * TimeUnit.MILLISECONDS.toNanos(1))
     val start = System.nanoTime()
     while (System.nanoTime() - start < maxExecutionNs && predicate()) {
         action()
