@@ -88,8 +88,8 @@ class DungeonGenerator(private val settings: Settings) {
             while (ctr < 4 && !finalPlace) {
                 movingRoom.room.topLeft = movingRoom.room.topLeft + moveVector
                 finalPlace = _rooms
-                        .filter { it.state === RoomState.State.Placed }
-                        .none { it.room.intersects(movingRoom.room, settings.roomMargin) }
+                    .filter { it.state === RoomState.State.Placed }
+                    .none { it.room.intersects(movingRoom.room, settings.roomMargin) }
                 ctr++
             }
             if (finalPlace) {
@@ -134,10 +134,10 @@ class DungeonGenerator(private val settings: Settings) {
                 if (i < j) Pair(x.room, y.room) else null
             }.filterNotNull()
         }.flatten()
-                .filterNot { graph.isRouteAvailable(it.first, it.second) }
-                .sortedBy { it.first.center.distance(it.second.center) }
-                .take(1)
-                .forEach { corridors.add(Graph.Edge(it.first, it.second)) }
+            .filterNot { graph.isRouteAvailable(it.first, it.second) }
+            .sortedBy { it.first.center.distance(it.second.center) }
+            .take(1)
+            .forEach { corridors.add(Graph.Edge(it.first, it.second)) }
 
         if (corridors.size == selectedRooms.size - 1) {
             selectedRooms[0].room.type = Room.RoomType.Entrance
@@ -183,7 +183,8 @@ class DungeonGenerator(private val settings: Settings) {
         if (leaveRooms.isNotEmpty()) {
             val entrance = selectedRooms.first { it.room.type == Room.RoomType.Entrance }
             leaveRooms.firstOrNull()?.let { roomState ->
-                val distance = graph.shortestPath(entrance.room, roomState.room)?.let { it.size - 1 } ?: 0
+                val distance = graph.shortestPath(entrance.room, roomState.room)?.let { it.size - 1 }
+                    ?: 0
                 val weight = Math.round(Math.pow(settings.questObjectiveDistanceFactor.toDouble(), distance.toDouble())).toInt()
                 distances.add(Pair(roomState, weight))
                 roomState.room.type = Room.RoomType.QuestObjective
@@ -191,10 +192,10 @@ class DungeonGenerator(private val settings: Settings) {
         } else {
             val questObjective = distances.weightedRandom(rng)
             selectedRooms
-                    .filter { it.room.type == Room.RoomType.QuestObjective }
-                    .forEach {
-                        it.room.type = if (it == questObjective) Room.RoomType.QuestObjective else Room.RoomType.Room
-                    }
+                .filter { it.room.type == Room.RoomType.QuestObjective }
+                .forEach {
+                    it.room.type = if (it == questObjective) Room.RoomType.QuestObjective else Room.RoomType.Room
+                }
             generationStep = GenerationStep.Finished
         }
 
@@ -207,7 +208,8 @@ class DungeonGenerator(private val settings: Settings) {
             return 0
         }
 
-        val next = neighbors(n).filterNot { it.otherEnd(n) == prev }.firstOrNull()?.otherEnd(n) ?: return 1
+        val next = neighbors(n).filterNot { it.otherEnd(n) == prev }.firstOrNull()?.otherEnd(n)
+            ?: return 1
 
         return branchDistance(next, n) + 1
     }

@@ -17,7 +17,7 @@ class DungeonGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
         private const val SCREEN_MARGIN = 20
     }
 
-    private val generator = DungeonGenerator(DungeonGenerator.Settings(0.6f, 4, 10, 1.3f, 1.618f,roomMargin = 0.6f))
+    private val generator = DungeonGenerator(DungeonGenerator.Settings(0.6f, 4, 10, 1.3f, 1.618f, roomMargin = 0.6f))
     private val paint = Paint().apply {
         isAntiAlias = true
         style = Paint.Style.STROKE
@@ -154,8 +154,8 @@ class DungeonGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
     }
 
     private fun calculatePosition(v: Vector, zoomInfo: ZoomInfo) = Vector(
-            (v.x - scaledWidth / 2f) * zoomInfo.scaleFactor + width / 2f + zoomInfo.translateX,
-            (v.y - scaledHeight / 2f) * zoomInfo.scaleFactor + height / 2f + zoomInfo.translateY
+        (v.x - scaledWidth / 2f) * zoomInfo.scaleFactor + width / 2f + zoomInfo.translateX,
+        (v.y - scaledHeight / 2f) * zoomInfo.scaleFactor + height / 2f + zoomInfo.translateY
     )
 
     private data class ZoomInfo(val scaleFactor: Float, val translateX: Float, val translateY: Float)
