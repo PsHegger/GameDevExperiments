@@ -40,11 +40,11 @@ class PathFindingScene(val gameSurfaceView: GameSurfaceView) : Scene {
     private var width = 0
     private var height = 0
 
-    val cellPaint = Paint()
+    private val cellPaint = Paint()
 
-    var pathFinder: BasePathFinder? = null
+    private var pathFinder: BasePathFinder? = null
 
-    val btns: ArrayList<Button> = arrayListOf()
+    private val btns: ArrayList<Button> = arrayListOf()
 
     override fun sizeChanged(width: Int, height: Int) {
         this.width = width
@@ -55,23 +55,23 @@ class PathFindingScene(val gameSurfaceView: GameSurfaceView) : Scene {
 
         btns.clear()
         btns.add(Button("DFS", width - 200f, height - 120f, width - 40f, height - 40f, btnBgColor, btnBorderColor, btnTextColor, 50f).apply {
-            onClick = { pathFinder = BreadthFirstSearch(mazeGenerator.fields) }
+            setOnClickListener { pathFinder = BreadthFirstSearch(mazeGenerator.fields) }
         })
 
         btns.add(Button("A*M", width - 400f, height - 120f, width - 240f, height - 40f, btnBgColor, btnBorderColor, btnTextColor, 50f).apply {
-            onClick = { pathFinder = AStar(mazeGenerator.fields, manhattanHeuristic) }
+            setOnClickListener { pathFinder = AStar(mazeGenerator.fields, manhattanHeuristic) }
         })
 
         btns.add(Button("A*E", width - 600f, height - 120f, width - 440f, height - 40f, btnBgColor, btnBorderColor, btnTextColor, 50f).apply {
-            onClick = { pathFinder = AStar(mazeGenerator.fields, euclideanHeuristic) }
+            setOnClickListener { pathFinder = AStar(mazeGenerator.fields, euclideanHeuristic) }
         })
 
         btns.add(Button("DIJ", width - 800f, height - 120f, width - 640f, height - 40f, btnBgColor, btnBorderColor, btnTextColor, 50f).apply {
-            onClick = { pathFinder = AStar(mazeGenerator.fields, constantHeuristic) }
+            setOnClickListener { pathFinder = AStar(mazeGenerator.fields, constantHeuristic) }
         })
 
         btns.add(Button("NEW", width - 200f, 40f, width - 40f, 120f, btnBgColor, btnBorderColor, btnTextColor, 50f).apply {
-            onClick = {
+            setOnClickListener {
                 pathFinder = null
                 mazeGenerator.reset(cellCountX, cellCountY)
                 mazeGenerator.generateAll()

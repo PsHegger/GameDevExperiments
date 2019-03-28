@@ -1,6 +1,7 @@
 package io.github.pshegger.gamedevexperiments.hud
 
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import io.github.pshegger.gamedevexperiments.utils.Touch
@@ -8,8 +9,19 @@ import io.github.pshegger.gamedevexperiments.utils.Touch
 /**
  * @author pshegger@gmail.com
  */
-class Button(val text: String, left: Float, top: Float, right: Float, bottom: Float, private val bgColor: Int, private val borderColor: Int, val textColor: Int, val textSize: Float) : HudElement {
-    var onClick: () -> Unit = {}
+class Button(
+    private val text: String,
+    left: Float,
+    top: Float,
+    right: Float? = null,
+    bottom: Float? = null,
+    private val bgColor: Int = Color.TRANSPARENT,
+    private val borderColor: Int = Color.GRAY,
+    private val textColor: Int = Color.BLACK,
+    private val textSize: Float = 50f
+) : HudElement {
+
+    private var _onClick: (() -> Unit)? = null
 
     private val textPaint: Paint = Paint().apply {
         isAntiAlias = true
@@ -31,10 +43,10 @@ class Button(val text: String, left: Float, top: Float, right: Float, bottom: Fl
         color = bgColor
     }
 
-    private val rect = RectF(left, top, right, bottom)
+    val width = if (right != null) right - left else 160f
+    val height = if (bottom != null) bottom - top else 80f
 
-    val width = right - left
-    val height = bottom - top
+    private val rect: RectF = RectF(left, top, left + width, top + height)
 
     var pressed = false
 
@@ -42,7 +54,7 @@ class Button(val text: String, left: Float, top: Float, right: Float, bottom: Fl
         if (touch != null && rect.contains(touch.x, touch.y)) {
             pressed = true
         } else if (pressed) {
-            onClick()
+            _onClick?.invoke()
             pressed = false
         }
     }
@@ -53,5 +65,9 @@ class Button(val text: String, left: Float, top: Float, right: Float, bottom: Fl
         canvas.drawRoundRect(rect, 15f, 15f, bgPaint)
         canvas.drawRoundRect(rect, 15f, 15f, borderPaint)
         canvas.drawText(text, rect.left + width / 2f, rect.top + (height + textHeight) / 2f, textPaint)
+    }
+
+    fun setOnClickListener(listener: () -> Unit) {
+        _onClick = listener
     }
 }

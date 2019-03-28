@@ -17,7 +17,17 @@ class DungeonGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
         private const val SCREEN_MARGIN = 20
     }
 
-    private val generator = DungeonGenerator(DungeonGenerator.Settings(0.6f, 4, 10, 1.3f, 1.618f, roomMargin = 0.6f))
+    private val generator = DungeonGenerator(
+        DungeonGenerator.Settings(
+            0.6f,
+            4,
+            10,
+            1.3f,
+            1.618f,
+            1,
+            roomMargin = 0.6f
+        )
+    )
     private val paint = Paint().apply {
         isAntiAlias = true
         style = Paint.Style.STROKE
@@ -45,12 +55,12 @@ class DungeonGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
         scaledWidth = width / SCALE_FACTOR
         scaledHeight = height / SCALE_FACTOR
 
-        btnRestart = Button("RES", width - 200f, height - 120f, width - 40f, height - 40f, Color.TRANSPARENT, Color.GRAY, Color.BLACK, 50f).apply {
-            onClick = { generator.reset(scaledWidth, scaledHeight) }
+        btnRestart = Button("RES", width - 200f, height - 120f).apply {
+            setOnClickListener { generator.reset(scaledWidth, scaledHeight) }
         }
 
-        btnInstant = Button("INS", width - 400f, height - 120f, width - 240f, height - 40f, Color.TRANSPARENT, Color.GRAY, Color.BLACK, 50f).apply {
-            onClick = {
+        btnInstant = Button("INS", width - 400f, height - 120f).apply {
+            setOnClickListener {
                 generator.reset(scaledWidth, scaledHeight)
                 generator.generateAll()
             }

@@ -52,6 +52,7 @@ class DungeonGenerator(private val settings: Settings) {
             GenerationStep.SpanningTreeGeneration -> generateSpanningTree()
             GenerationStep.EntranceSelection -> selectEntrance()
             GenerationStep.QuestObjectiveSelection -> selectQuestObjective()
+            GenerationStep.GenerateCorridors -> generateCorridors()
             else -> Log.d("DungeonGenerator", "The generation is already over")
         }
     }
@@ -62,6 +63,7 @@ class DungeonGenerator(private val settings: Settings) {
         }
     }
 
+    //<editor-fold desc="Generation">
     private fun generateRoom() {
         val width = rng.nextInt(settings.maxSize - settings.minSize + 1) + settings.minSize
         val height = rng.nextInt(settings.maxSize - settings.minSize + 1) + settings.minSize
@@ -196,11 +198,16 @@ class DungeonGenerator(private val settings: Settings) {
                 .forEach {
                     it.room.type = if (it == questObjective) Room.RoomType.QuestObjective else Room.RoomType.Room
                 }
-            generationStep = GenerationStep.Finished
+            generationStep = GenerationStep.GenerateCorridors
         }
 
         delayCtr = 0
     }
+
+    private fun generateCorridors() {
+        generationStep = GenerationStep.Finished
+    }
+    //</editor-fold>
 
     private fun <T> Graph<T>.branchDistance(n: T, prev: T? = null): Int {
         val neighborCount = neighbors(n).size
@@ -214,6 +221,7 @@ class DungeonGenerator(private val settings: Settings) {
         return branchDistance(next, n) + 1
     }
 
+    //<editor-fold desc="Inner classes">
     data class Room(var topLeft: Vector, val width: Int, val height: Int, var type: RoomType = RoomType.Room) {
         val center: Vector
             get() = Vector(topLeft.x + width / 2f, topLeft.y + height / 2f)
@@ -233,9 +241,26 @@ class DungeonGenerator(private val settings: Settings) {
         }
     }
 
-    data class Settings(val fillRatio: Float, val minSize: Int, val maxSize: Int, val finalAreaRatio: Float, val questObjectiveDistanceFactor: Float, val roomMargin: Float = 0f, val seed: Long? = null)
+    data class Settings(
+        val fillRatio: Float,
+        val minSize: Int,
+        val maxSize: Int,
+        val finalAreaRatio: Float,
+        val questObjectiveDistanceFactor: Float,
+        val corridorWidth: Int,
+        val roomMargin: Float = 0f,
+        val seed: Long? = null
+    )
 
     private enum class GenerationStep {
-        RoomGeneration, RoomMovement, RoomSelection, SpanningTreeGeneration, EntranceSelection, QuestObjectiveSelection, Finished
+        RoomGeneration,
+        RoomMovement,
+        RoomSelection,
+        SpanningTreeGeneration,
+        EntranceSelection,
+        QuestObjectiveSelection,
+        GenerateCorridors,
+        Finished
     }
+    //</editor-fold>
 }

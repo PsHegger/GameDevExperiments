@@ -28,11 +28,11 @@ class SimplexGeneratorScene(val gameSurfaceView: GameSurfaceView) : Scene {
         this.height = height
 
         btnRestart = Button("RES", width - 200f, height - 120f, width - 40f, height - 40f, Color.argb(150, 0, 0, 0), Color.MAGENTA, Color.MAGENTA, 50f).apply {
-            onClick = { generator.reset(width, height) }
+            setOnClickListener { generator.reset(width, height) }
         }
 
         btnInstant = Button("INS", width - 400f, height - 120f, width - 240f, height - 40f, Color.argb(150, 0, 0, 0), Color.MAGENTA, Color.MAGENTA, 50f).apply {
-            onClick = {
+            setOnClickListener {
                 generator.reset(width, height)
                 generator.generateAll()
             }

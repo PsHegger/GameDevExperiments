@@ -38,12 +38,12 @@ class DelaunayBuildingScene(val gameSurfaceView: GameSurfaceView) : Scene {
         this.width = width
         this.height = height
 
-        btnRestart = Button("RES", width - 200f, height - 120f, width - 40f, height - 40f, Color.TRANSPARENT, Color.GRAY, Color.BLACK, 50f).apply {
-            onClick = { initGenerator() }
+        btnRestart = Button("RES", width - 200f, height - 120f).apply {
+            setOnClickListener { initGenerator() }
         }
 
-        btnInstant = Button("INS", width - 400f, height - 120f, width - 240f, height - 40f, Color.TRANSPARENT, Color.GRAY, Color.BLACK, 50f).apply {
-            onClick = {
+        btnInstant = Button("INS", width - 400f, height - 120f).apply {
+            setOnClickListener {
                 initGenerator()
                 generator.generateAll()
             }

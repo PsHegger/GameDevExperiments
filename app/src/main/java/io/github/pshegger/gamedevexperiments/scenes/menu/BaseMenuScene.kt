@@ -46,7 +46,7 @@ abstract class BaseMenuScene(val gameSurfaceView: GameSurfaceView) : Scene {
         buttons = scenes.mapIndexed { i, (title, scene) ->
             val top = (i + 4) * margin + i * rectHeight + titleHeight
             Button(title, margin, top, width - margin, top + rectHeight, Color.GREEN, Color.RED, Color.BLACK, textS).apply {
-                onClick = { gameSurfaceView.scene = scene }
+                setOnClickListener { gameSurfaceView.scene = scene }
             }
         }
     }

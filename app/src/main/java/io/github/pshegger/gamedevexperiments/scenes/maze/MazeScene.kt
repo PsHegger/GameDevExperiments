@@ -32,11 +32,11 @@ class MazeScene(val gameSurfaceView: GameSurfaceView, private val generator: Bas
         val cellCountY = (height - 2 * margin) / cellSize
 
         btnRestart = Button("RES", width - 200f, height - 120f, width - 40f, height - 40f, Color.argb(150, 0, 0, 0), Color.LTGRAY, Color.MAGENTA, 50f).apply {
-            onClick = { generator.reset(cellCountX, cellCountY) }
+            setOnClickListener { generator.reset(cellCountX, cellCountY) }
         }
 
         btnInstant = Button("INS", width - 400f, height - 120f, width - 240f, height - 40f, Color.argb(150, 0, 0, 0), Color.LTGRAY, Color.MAGENTA, 50f).apply {
-            onClick = {
+            setOnClickListener {
                 generator.reset(cellCountX, cellCountY)
                 generator.generateAll()
             }

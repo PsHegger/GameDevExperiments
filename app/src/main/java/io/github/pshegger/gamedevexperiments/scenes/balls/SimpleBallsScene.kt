@@ -16,7 +16,7 @@ import java.util.*
  * @author pshegger@gmail.com
  */
 class SimpleBallsScene(val gameSurfaceView: GameSurfaceView) : Scene {
-    var balls = listOf<Ball>()
+    var balls = mutableListOf<Ball>()
     var width: Int = 0
     var height: Int = 0
 
@@ -33,10 +33,10 @@ class SimpleBallsScene(val gameSurfaceView: GameSurfaceView) : Scene {
         this.height = height
 
         val rng = Random()
-        balls = (1..100).map { generateBall(rng) }
+        balls = (1..100).map { generateBall(rng) }.toMutableList()
 
-        btnAdd = Button("ADD", width - 200f, height - 120f, width - 40f, height - 40f, Color.TRANSPARENT, Color.GRAY, Color.BLACK, 50f).apply {
-            onClick = { balls += listOf(generateBall(rng)) }
+        btnAdd = Button("ADD", width - 200f, height - 120f).apply {
+            setOnClickListener { balls.add(generateBall(rng)) }
         }
     }
 
