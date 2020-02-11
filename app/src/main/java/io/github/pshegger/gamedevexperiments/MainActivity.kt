@@ -1,6 +1,6 @@
 package io.github.pshegger.gamedevexperiments
 
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.WindowManager
 import io.github.pshegger.gamedevexperiments.scenes.menu.MainMenuScene
@@ -18,9 +18,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
-        MainActivity.instance = this
+        instance = this
 
-        gameSurface = findViewById(R.id.gameSurface) as GameSurfaceView
+        gameSurface = findViewById(R.id.gameSurface)
         gameSurface.scene = MainMenuScene(gameSurface)
     }
 
